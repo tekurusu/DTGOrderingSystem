@@ -1,0 +1,55 @@
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\DTG Ordering System.dll
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\DTG Ordering System.pdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\DTG_Ordering_System.DTG_Ordering_System.apk
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\DTG_Ordering_System.DTG_Ordering_System-Signed.apk
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\DTG Ordering System.dll
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\DTG Ordering System.pdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\bin\DTG_Ordering_System.DTG_Ordering_System.apk
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\values\strings.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\drawable\icon.png
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\R.cs.flag
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\uploadflags.txt
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\anim\slide_up.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\Newtonsoft.Json.dll
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\SQLite.Net.Async.dll
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\SQLite.Net.dll
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\SQLite.Net.Platform.XamarinAndroid.dll
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\SQLiteNetExtensions.dll
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\Newtonsoft.Json.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\SQLiteNetExtensions.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\itemlistcustomrow.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\numberpickerfragment.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\categorylist.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\databasescreen.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\orderlist.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\orderlistcustomrow.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\neworder.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\newordercustomrow.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\res\layout\itemlist.xml
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\DTG Ordering System.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\Java.Interop.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\Mono.Android.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\mscorlib.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.ComponentModel.Composition.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.Core.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.Net.Http.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.Runtime.Serialization.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.ServiceModel.Internals.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.Xml.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\System.Xml.Linq.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\DTG Ordering System.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\Java.Interop.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\Mono.Android.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\mscorlib.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\SQLiteNetExtensions.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.ComponentModel.Composition.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.Core.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.Net.Http.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.Runtime.Serialization.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.ServiceModel.Internals.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.Xml.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\android\assets\System.Xml.Linq.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\obj\Debug\DTG Ordering System.dll.mdb
+D:\Xamarin\DTG Ordering System\DTG Ordering System\bin\Debug\DTG Ordering System.dll.mdb

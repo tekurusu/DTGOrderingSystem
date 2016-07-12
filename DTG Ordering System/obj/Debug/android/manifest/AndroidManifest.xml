@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="DTG_Ordering_System.DTG_Ordering_System" android:versionCode="1" android:versionName="1.0">
+  <!--suppress UsesMinSdkAttributes-->
+  <uses-sdk android:minSdkVersion="16" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <application android:label="DTG_Ordering_System" android:name="android.app.Application" android:allowBackup="true" android:icon="@drawable/icon" android:debuggable="true">
+    <activity android:icon="@drawable/icon" android:label="Categories Screen" android:name="md56cda20b57d854a06900bae9a4594df3f.CategoriesActivity" />
+    <activity android:icon="@drawable/icon" android:label="Home Screen" android:name="md56cda20b57d854a06900bae9a4594df3f.DatabaseActivity" />
+    <activity android:icon="@drawable/icon" android:label="My Orders" android:name="md56cda20b57d854a06900bae9a4594df3f.OrdersActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity android:icon="@drawable/icon" android:label="New Order" android:name="md56cda20b57d854a06900bae9a4594df3f.NewOrderActivity" />
+    <activity android:icon="@drawable/icon" android:label="Item Screen" android:name="md56cda20b57d854a06900bae9a4594df3f.ItemsActivity" />
+    <provider android:name="mono.MonoRuntimeProvider" android:exported="false" android:initOrder="2147483647" android:authorities="DTG_Ordering_System.DTG_Ordering_System.mono.MonoRuntimeProvider.__mono_init__" />
+    <!--suppress ExportedReceiver-->
+    <receiver android:name="mono.android.Seppuku">
+      <intent-filter>
+        <action android:name="mono.android.intent.action.SEPPUKU" />
+        <category android:name="mono.android.intent.category.SEPPUKU.DTG_Ordering_System.DTG_Ordering_System" />
+      </intent-filter>
+    </receiver>
+  </application>
+</manifest>
