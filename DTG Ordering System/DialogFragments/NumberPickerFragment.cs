@@ -51,9 +51,9 @@ namespace DTG_Ordering_System
             base.OnCreateView(inflater, container, savedInstanceState);
 
             int quantity = Arguments.GetInt("quantity");
-            int position = Arguments.GetInt("position");
+			int position = Arguments.GetInt("position");
 
-            var view = inflater.Inflate(Resource.Layout.numberPickerFragment, container, false);
+			var view = inflater.Inflate(Resource.Layout.numberPickerFragment, container, false);
             numPicker = view.FindViewById<NumberPicker>(Resource.Id.quantityPicker);
             okButton = view.FindViewById<Button>(Resource.Id.pickerOK);
             cancelButton = view.FindViewById<Button>(Resource.Id.pickerCancel);

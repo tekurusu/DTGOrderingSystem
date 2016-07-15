@@ -12,7 +12,7 @@ using Android.Widget;
 
 namespace DTG_Ordering_System
 {
-    [Activity(Label = "Home Screen", Icon = "@drawable/icon")]
+    [Activity(Label = "Home Screen", MainLauncher = true, Icon = "@drawable/icon")]
     public class DatabaseActivity : Activity
     {
         private Button addOrder;
@@ -31,27 +31,27 @@ namespace DTG_Ordering_System
 
             addOrder.Click += (object sender, EventArgs e) =>
             {
-                var intent = new Intent(this, typeof(CategoriesActivity));
-                StartActivity(intent);
+				StartActivity(typeof(CategoriesActivity));
             };
 
             loadDB.Click += (object sender, EventArgs e) =>
             {
                 DBRepository dbr = new DBRepository();
                 dbr.CreateDB();
-                dbr.CreateTable();
 
-                dbr.insertCategory("Meat Wilbert");
+                dbr.insertCategory("Meat");
+				dbr.insertCategory("Spices");
+				dbr.insertCategory("Others");
 
-                dbr.insertItem("Chicken", "kilos", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Beef", "cows", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Pork", "pigs", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Justine Young", "manyak", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Marty Geronimo", "mats", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Jerome Tec", "subjects", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Wilbert Uy", "top 1", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Zarah Arcega", "grad school", dbr.getCategory("Meat Wilbert"));
-                dbr.insertItem("Jules Lui", "lightning", dbr.getCategory("Meat Wilbert"));
+                dbr.insertItem("Chicken", "kilos", dbr.getCategory("Meat"));
+                dbr.insertItem("Beef", "cows", dbr.getCategory("Meat"));
+                dbr.insertItem("Pork", "pigs", dbr.getCategory("Meat"));
+                dbr.insertItem("Paprika", "manyak", dbr.getCategory("Spices"));
+                dbr.insertItem("Salt", "mats", dbr.getCategory("Spices"));
+                dbr.insertItem("Sugar", "subjects", dbr.getCategory("Spices"));
+                dbr.insertItem("Broom", "top 1", dbr.getCategory("Others"));
+                dbr.insertItem("Fan", "grad school", dbr.getCategory("Others"));
+                dbr.insertItem("Water", "lightning", dbr.getCategory("Others"));
             };
 
             deleteDB.Click += (object sender, EventArgs e) =>
@@ -59,8 +59,6 @@ namespace DTG_Ordering_System
                 DBRepository dbr = new DBRepository();
                 dbr.deleteDB();
             };
-
-            // Create your application here
         }
     }
 }

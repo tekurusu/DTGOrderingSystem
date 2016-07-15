@@ -1,73 +1,71 @@
 ﻿using System;
 using System.Data;
 using System.IO;
-using SQLite;
+using Realms;
+using System.Linq;
+using System.Threading;
 using System.Collections.Generic;
-using Android.Content;
 
 namespace DTG_Ordering_System
 {
 	public class DBRepository
 	{
-        // code to create SQL connection
-        //public void establishSQLConnection()
-        //{
-        //	//where the file will be created on which folder and establishing an SQL connection
-        //	string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-        //	var db = new SQLiteConnection(dbPath);
-        //}
+		private Realm realm;
 
         //code to create the database
         public void CreateDB()
 		{
-            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-			var db = new SQLiteConnection(dbPath);
-		}
-
-		//code to create a table
-		public void CreateTable()
-		{
-			//where the file will be created on which folder and establishing an SQL connection
-			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-			var db = new SQLiteConnection(dbPath);
-            
-            db.CreateTable<Item>();
-            db.CreateTable<Category>();
+			realm = Realm.GetInstance();
 		}
 
 		//code to insert data
 		public void insertItem(string itemName, string itemUnit, Category category)
-		{ 
-			//where the file will be created on which folder and establishing an SQL connection
-			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-			var db = new SQLiteConnection(dbPath);
+		{
+			realm = Realm.GetInstance();
 
-			Item item = new Item();
-			item.Name = itemName;
-			item.Unit = itemUnit;
-            //item.CategoryId = category.Id;
+			using (var transaction = realm.BeginWrite())
+			{
+				var item = realm.CreateObject<Item>();
 
-            db.Insert(item);
+				string UUID = Guid.NewGuid().ToString();
+
+				item.Id = UUID;
+				item.Name = itemName;
+				item.Unit = itemUnit;
+				item.Category = category;
+				category.Items.Add(item);
+
+				transaction.Commit();
+			}
+
 		}
 
-        public void insertCategory(string name)
+        public void insertCategory(string categoryName)
         {
-            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-            var db = new SQLiteConnection(dbPath);
+			realm = Realm.GetInstance();
 
-            Category category = new Category();
-            category.Name = name;
+			using (var transaction = realm.BeginWrite())
+			{
+				var category = realm.CreateObject<Category>();
 
-            db.Insert(category);
-        }
+				string UUID = Guid.NewGuid().ToString();
 
+				category.Id = UUID;
+				category.Name = categoryName;
+
+				transaction.Commit();
+			}
+
+		}
+
+		//code to get category using category name
         public Category getCategory(string name)
         {
-            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-            var db = new SQLiteConnection(dbPath);
-            Category cat = new Category();
+			realm = Realm.GetInstance();
 
-            var table = db.Table<Category>();
+			Category cat = new Category();
+
+			var table = realm.All<Category>();
             foreach (var cate in table)
             {
                 if (cate.Name == name)
@@ -79,135 +77,66 @@ namespace DTG_Ordering_System
         }
 
 		//code to retrieve all data
-		public List<Item> GetAllData()
+		public List<Item> GetAllItems(string categoryId)
 		{
-			//where the file will be created on which folder and establishing an SQL connection
-			string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-			var db = new SQLiteConnection(dbPath);
+			realm = Realm.GetInstance();
 
 			List<Item> items = new List<Item>();
-			var table = db.Table<Item>();
-			foreach (var item in table)
+
+			var cat = realm.All<Category>().Where(c => c.Id == categoryId);
+
+			foreach (var cate in cat)
 			{
-                items.Add(item);
+				foreach (var i in cate.Items)
+				{
+					items.Add(i);
+				}
 			}
 
 			return items;
 		}
 
-		//code to retrieve specific data using ORM
-		public string GetDataById(int id)
+		public List<Category> GetAllCategories()
 		{
-			try
-			{
-				//where the file will be created on which folder and establishing an SQL connection
-				string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-				var db = new SQLiteConnection(dbPath);
+			realm = Realm.GetInstance();
 
-				//get is a method which is going to retrieve data based on the Primary Key
-				var item = db.Get<Item>(id);
+			var allCategories = realm.All<Category>().OrderBy(i => i.Name);
 
-				return item.Name + " | " + item.Unit;
-			}
-			catch (Exception ex)
+			List<Category> categories = new List<Category>();
+
+			foreach (var cat in allCategories)
 			{
-				return "Error: " + ex.Message;
+				categories.Add(cat);
 			}
+
+			return categories;
 		}
 
-		//code to retrieve specific attribute using ORM - Item Name
-		public string GetItemNameById(int id)
-		{
-			try
-			{
-				//where the file will be created on which folder and establishing an SQL connection
-				string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-				var db = new SQLiteConnection(dbPath);
-
-				//get is a method which is going to retrieve data based on the Primary Key
-				var item = db.Get<Item>(id);
-
-				return item.Name;
-			}
-			catch (Exception ex)
-			{
-				return "Error: " + ex.Message;
-			}
-		}
-
-		//code to retrieve specific attribute using ORM - Item Quantity
-		public string GetItemQuantityById(int id)
-		{
-			try
-			{
-				//where the file will be created on which folder and establishing an SQL connection
-				string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-				var db = new SQLiteConnection(dbPath);
-
-				//get is a method which is going to retrieve data based on the Primary Key
-				var item = db.Get<Item>(id);
-
-				return item.Unit.ToString();
-			}
-			catch (Exception ex)
-			{
-				return "Error: " + ex.Message;
-			}
-		}
-
-		//code to update data using ORM
-		public string UpdateData(int id, string name, string unit)
+		//code to set quantity of an item
+		public void SetQuantity(string itemId, int quantity)
 		{ 
-			try
+			realm = Realm.GetInstance();
+
+			using (var transaction = realm.BeginWrite())
 			{
-				//where the file will be created on which folder and establishing an SQL connection
-				string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-				var db = new SQLiteConnection(dbPath);
+				var someItem = realm.All<Item>().Where(i => i.Id == itemId).First();
+				someItem.Quantity = quantity;
 
-				var item = db.Get<Item>(id);
-				item.Name = name;
-				item.Unit = unit;
-
-				db.Update(item);
-
-				return "Item updated...";
-			}
-			catch (Exception ex)
-			{
-				return "Error: " + ex.Message;
-			}
-		}
-
-		//code to delete data
-		public string DeleteItem(int id)
-		{
-			try
-			{
-				//where the file will be created on which folder and establishing an SQL connection
-				string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-				var db = new SQLiteConnection(dbPath);
-
-				string tempName = GetItemNameById(id);
-
-				var item = db.Get<Item>(id);
-				db.Delete(item);
-
-				return String.Format("Item: {0} deleted successfully...", tempName);
-			}
-			catch (Exception ex)
-			{
-				return "Error: " + ex.Message;
+				transaction.Commit();
 			}
 		}
 
         public void deleteDB()
         {
-            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "dtgapp.db3");
-            var db = new SQLiteConnection(dbPath);
+			realm = Realm.GetInstance();
 
-            db.DeleteAll<Item>();
-            //db.DeleteAll<Category>();
-        }
+			using (var transaction = realm.BeginWrite())
+			{
+				realm.RemoveAll();
+				transaction.Commit();
+			}
+			realm.Close();
+		}
 	}
 }
 

@@ -13,6 +13,8 @@ namespace DTG_Ordering_System
     public class ItemsActivity : Activity
     {
         private static List<Item> items = new List<Item>();
+		private static List<Category> categories = new List<Category>();
+		private static List<String> categoryId = new List<String>();
         private ListView mListView;
         private int currentPosition;
         private ItemAdapter adapter;
@@ -24,34 +26,20 @@ namespace DTG_Ordering_System
             SetContentView(Resource.Layout.itemList);
             mListView = FindViewById<ListView>(Resource.Id.itemListView);
 
-            //get categoryID from previous activity
-            var category = Intent.Extras.GetInt("CategoryID");
-            items.Clear();
+			var catID = Intent.Extras.GetString("CategoryID");
+			items.Clear();
 
-            if (category == 0)  //Meat
-            {
-                items.Add(new Item() { Name = "Chicken", Unit = "cuts" });
-                items.Add(new Item() { Name = "Pork", Unit = "pigs" });
-                items.Add(new Item() { Name = "Fish", Unit = "fillets" });
-            }
+			DBRepository dbr = new DBRepository();
 
-            else if (category == 1) //Spices
-            {
-                items.Add(new Item() { Name = "Salt", Unit = "grams" });
-                items.Add(new Item() { Name = "Sugar", Unit = "grams" });
-                items.Add(new Item() { Name = "Pepper", Unit = "grams" });
-                items.Add(new Item() { Name = "Paprica", Unit = "kilos" });
-                items.Add(new Item() { Name = "Basil", Unit = "kilos" });
-                items.Add(new Item() { Name = "Cinnamon", Unit = "kilos" });
-                items.Add(new Item() { Name = "Chili", Unit = "kilos" });
-            }
+			categories = dbr.GetAllCategories();
 
-            else if (category == 2) //Others
-            {
-                items.Add(new Item() { Name = "Wilbert Uy", Unit = "UPE" });
-                items.Add(new Item() { Name = "Jerome Tec", Unit = "98" });
-                items.Add(new Item() { Name = "Zarah Arcega", Unit = "1910" });
-            }
+			foreach (Category c in categories)
+			{
+				if (catID == c.Id)
+				{
+					items = dbr.GetAllItems(catID);
+				}
+			}
 
             adapter = new ItemAdapter(this, items);
 
@@ -66,9 +54,9 @@ namespace DTG_Ordering_System
 
                 Bundle args = new Bundle();
                 args.PutInt("quantity", items[e.Position].Quantity);
-                args.PutInt("position", e.Position);
+				args.PutInt("position", e.Position);
 
-                picker.Arguments = args;
+				picker.Arguments = args;
                 picker.Show(transaction, "dialog fragment");
 
                 picker.onNumberPickComplete += Picker_onNumberPickComplete;
@@ -77,9 +65,10 @@ namespace DTG_Ordering_System
 
         private void Picker_onNumberPickComplete(object sender, OnNumberPickEventArgs e)
         {
-            //var editer = this.mListView.GetChildAt(currentPosition);
-            //editer.FindViewById<TextView>(Resource.Id.itemQuantity).Text = e.Quantity.ToString();
-            items[e.Position].Quantity = e.Quantity;
+			DBRepository dbr = new DBRepository();
+
+			dbr.SetQuantity(items[e.Position].Id, e.Quantity);
+
             adapter.NotifyDataSetChanged();
         }
     }

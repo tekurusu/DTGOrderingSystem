@@ -1,31 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+using Realms;
 
 namespace DTG_Ordering_System
 {
-    [Table("Item")]
-
-    public class Item
+	public class Item : RealmObject
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
-        //[ForeignKey(typeof(Category))]
-        //public int CategoryId { get; set; }
+        [ObjectId]
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Unit { get; set; }
         public int Quantity { get; set; }
 
-        //[ManyToOne]
-        //public Category Category { get; set; }
-    }
+        public Category Category { get; set; }
+	}
 }

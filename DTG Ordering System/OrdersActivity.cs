@@ -12,8 +12,9 @@ using Android.Widget;
 
 namespace DTG_Ordering_System
 {
-    [Activity(Label = "My Orders", MainLauncher = true, Icon = "@drawable/icon")]
-    public class OrdersActivity : Activity
+	//[Activity(Label = "My Orders", MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity(Label = "My Orders",  Icon = "@drawable/icon")]
+	public class OrdersActivity : Activity
     {
         private ListView mListView;
         private static List<Order> orders;

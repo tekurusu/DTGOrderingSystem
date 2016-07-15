@@ -100,11 +100,9 @@ class MonoPackageManager_Resources {
 		/* We need to ensure that "DTG Ordering System.dll" comes first in this list. */
 		"DTG Ordering System.dll",
 		"Java.Interop.dll",
-		"Newtonsoft.Json.dll",
-		"SQLite.Net.Async.dll",
-		"SQLite.Net.dll",
-		"SQLite.Net.Platform.XamarinAndroid.dll",
-		"SQLiteNetExtensions.dll",
+		"DotNetCross.Memory.Unsafe.dll",
+		"Realm.dll",
+		"System.ServiceModel.Internals.dll",
 		"System.Threading.dll",
 		"System.Runtime.dll",
 		"System.Collections.dll",
@@ -115,13 +113,6 @@ class MonoPackageManager_Resources {
 		"System.Runtime.InteropServices.dll",
 		"System.Runtime.Extensions.dll",
 		"System.Reflection.Extensions.dll",
-		"System.ServiceModel.Internals.dll",
-		"System.Threading.Tasks.dll",
-		"System.Linq.Expressions.dll",
-		"System.Text.Encoding.dll",
-		"System.Globalization.dll",
-		"System.ObjectModel.dll",
-		"System.Resources.ResourceManager.dll",
 	};
 	public static final String[] Dependencies = new String[]{
 	};
