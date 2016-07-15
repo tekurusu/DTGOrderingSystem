@@ -1,2 +1,17 @@
-/DTG Ordering System/obj
-/DTG Ordering System/bin
+Components
+packages
+Resource.designer.cs
+
+bin
+obj
+
+*.pidb
+*.userprefs
+*.swp
+*.DS_Store
+*.nib
+*.suo
+*.user
+*.pfx
+
+*_ReSharper.*/
