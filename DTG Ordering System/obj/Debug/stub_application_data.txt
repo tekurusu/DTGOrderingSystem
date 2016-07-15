@@ -1,2 +1,0 @@
-android.app.Application
-DTG_Ordering_System.DTG_Ordering_System

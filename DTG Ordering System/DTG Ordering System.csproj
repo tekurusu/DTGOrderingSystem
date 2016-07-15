@@ -63,12 +63,12 @@
     <Compile Include="DialogFragments\NumberPickerFragment.cs" />
     <Compile Include="OrdersActivity.cs" />
     <Compile Include="NewOrderActivity.cs" />
-    <Compile Include="ORM\Category.cs" />
-    <Compile Include="ORM\Item.cs" />
+    <Compile Include="Realm\Category.cs" />
+    <Compile Include="Realm\Item.cs" />
     <Compile Include="Adapters\itemAdapter.cs" />
     <Compile Include="ItemsActivity.cs" />
-    <Compile Include="ORM\DBRepository.cs" />
-    <Compile Include="ORM\Order.cs" />
+    <Compile Include="Realm\DBRepository.cs" />
+    <Compile Include="Realm\Order.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
