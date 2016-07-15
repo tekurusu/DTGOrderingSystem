@@ -13,7 +13,7 @@ namespace DTG_Ordering_System
 		private Realm realm;
 
         //code to create the database
-        public void CreateDB()
+        public void createDB()
 		{
 			realm = Realm.GetInstance();
 		}
@@ -26,7 +26,6 @@ namespace DTG_Ordering_System
 			using (var transaction = realm.BeginWrite())
 			{
 				var item = realm.CreateObject<Item>();
-
 				string UUID = Guid.NewGuid().ToString();
 
 				item.Id = UUID;
@@ -37,18 +36,18 @@ namespace DTG_Ordering_System
 
 				transaction.Commit();
 			}
-
 		}
 
-        public void insertCategory(string categoryName)
+        public string insertCategory(string categoryName)
         {
 			realm = Realm.GetInstance();
+            string UUID;
 
 			using (var transaction = realm.BeginWrite())
 			{
 				var category = realm.CreateObject<Category>();
 
-				string UUID = Guid.NewGuid().ToString();
+				UUID = Guid.NewGuid().ToString();
 
 				category.Id = UUID;
 				category.Name = categoryName;
@@ -56,64 +55,47 @@ namespace DTG_Ordering_System
 				transaction.Commit();
 			}
 
+            return UUID;
 		}
 
-		//code to get category using category name
-        public Category getCategory(string name)
+        public Category getCategory(string categoryId)
         {
-			realm = Realm.GetInstance();
-
-			Category cat = new Category();
-
-			var table = realm.All<Category>();
-            foreach (var cate in table)
-            {
-                if (cate.Name == name)
-                {
-                    cat = cate;
-                }
-            }
-            return cat;
+            return Realm.GetInstance().All<Category>().Where(c => c.Id == categoryId).First();
         }
 
-		//code to retrieve all data
-		public List<Item> GetAllItems(string categoryId)
+        public Item getItem(string guid)
+        {
+            return Realm.GetInstance().All<Item>().Where(c => c.Id == guid).First();
+        }
+
+		public List<Item> getAllItems(string categoryId)
 		{
-			realm = Realm.GetInstance();
-
 			List<Item> items = new List<Item>();
+			var cat = getCategory(categoryId).Items;
 
-			var cat = realm.All<Category>().Where(c => c.Id == categoryId);
-
-			foreach (var cate in cat)
+            foreach (var c in cat)
 			{
-				foreach (var i in cate.Items)
-				{
-					items.Add(i);
-				}
+                items.Add(c);
 			}
 
-			return items;
+			return items;         
 		}
 
-		public List<Category> GetAllCategories()
+		public List<Category> getAllCategories()
 		{
 			realm = Realm.GetInstance();
 
 			var allCategories = realm.All<Category>().OrderBy(i => i.Name);
-
 			List<Category> categories = new List<Category>();
 
 			foreach (var cat in allCategories)
 			{
 				categories.Add(cat);
 			}
-
 			return categories;
 		}
 
-		//code to set quantity of an item
-		public void SetQuantity(string itemId, int quantity)
+		public void setQuantity(string itemId, int quantity)
 		{ 
 			realm = Realm.GetInstance();
 

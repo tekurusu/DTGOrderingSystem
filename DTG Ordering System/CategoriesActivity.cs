@@ -22,7 +22,7 @@ namespace DTG_Ordering_System
 
 			DBRepository dbr = new DBRepository();
 
-			categories = dbr.GetAllCategories();
+			categories = dbr.getAllCategories();
 
 			foreach (Category c in categories)
 			{

@@ -31,18 +31,19 @@ namespace DTG_Ordering_System
 
 			DBRepository dbr = new DBRepository();
 
-			categories = dbr.GetAllCategories();
+			categories = dbr.getAllCategories();
 
 			foreach (Category c in categories)
 			{
 				if (catID == c.Id)
 				{
-					items = dbr.GetAllItems(catID);
+					items = dbr.getAllItems(catID);
 				}
 			}
 
             adapter = new ItemAdapter(this, items);
 
+            //testing the adapter
             Item indexerTest = adapter[1]; //Item at index 1
 
             mListView.Adapter = adapter;
@@ -67,7 +68,7 @@ namespace DTG_Ordering_System
         {
 			DBRepository dbr = new DBRepository();
 
-			dbr.SetQuantity(items[e.Position].Id, e.Quantity);
+			dbr.setQuantity(items[e.Position].Id, e.Quantity);
 
             adapter.NotifyDataSetChanged();
         }
