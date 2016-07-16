@@ -42,6 +42,7 @@ namespace DTG_Ordering_System
         private NumberPicker numPicker;
         private Button okButton;
         private Button cancelButton;
+        private TextView numPickerQuantity;
         Context thisContext;
 
         public event EventHandler<OnNumberPickEventArgs> onNumberPickComplete;
@@ -52,11 +53,15 @@ namespace DTG_Ordering_System
 
             int quantity = Arguments.GetInt("quantity");
 			int position = Arguments.GetInt("position");
+            string itemName = Arguments.GetString("itemName");
 
 			var view = inflater.Inflate(Resource.Layout.numberPickerFragment, container, false);
             numPicker = view.FindViewById<NumberPicker>(Resource.Id.quantityPicker);
             okButton = view.FindViewById<Button>(Resource.Id.pickerOK);
             cancelButton = view.FindViewById<Button>(Resource.Id.pickerCancel);
+            numPickerQuantity = view.FindViewById<TextView>(Resource.Id.numPickerQuantity);
+
+            numPickerQuantity.Text = "Input quantity for " + itemName + ":";
 
             okButton.Click += (object sender, EventArgs e) =>
             {

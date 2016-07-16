@@ -13,33 +13,26 @@ namespace DTG_Ordering_System
     public class ItemsActivity : Activity
     {
         private static List<Item> items = new List<Item>();
-		private static List<Category> categories = new List<Category>();
-		private static List<String> categoryId = new List<String>();
+        private static List<Item> addedItems = new List<Item>();
+        private static List<Category> categories = new List<Category>();
         private ListView mListView;
-        private int currentPosition;
         private ItemAdapter adapter;
+        private Button itemAdd;   
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.itemList);
-            mListView = FindViewById<ListView>(Resource.Id.itemListView);
+            this.Title = "Add " + Intent.Extras.GetString("categoryName");
 
-			var catID = Intent.Extras.GetString("CategoryID");
+            mListView = FindViewById<ListView>(Resource.Id.itemListView);
+            itemAdd = FindViewById<Button>(Resource.Id.itemAdd);
+
 			items.Clear();
 
 			DBRepository dbr = new DBRepository();
-
-			categories = dbr.getAllCategories();
-
-			foreach (Category c in categories)
-			{
-				if (catID == c.Id)
-				{
-					items = dbr.getAllItems(catID);
-				}
-			}
+            items = dbr.getAllItems(Intent.Extras.GetString("categoryId"));
 
             adapter = new ItemAdapter(this, items);
 
@@ -49,18 +42,26 @@ namespace DTG_Ordering_System
             mListView.Adapter = adapter;
             mListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
             {
-                currentPosition = e.Position;
                 FragmentTransaction transaction = FragmentManager.BeginTransaction();
                 NumberPickerFragment picker = new NumberPickerFragment();
 
                 Bundle args = new Bundle();
                 args.PutInt("quantity", items[e.Position].Quantity);
 				args.PutInt("position", e.Position);
+                args.PutString("itemName", items[e.Position].Name);
 
 				picker.Arguments = args;
                 picker.Show(transaction, "dialog fragment");
 
                 picker.onNumberPickComplete += Picker_onNumberPickComplete;
+            };
+
+            itemAdd.Click += delegate
+            {
+                Intent intent = new Intent(ApplicationContext, typeof(NewOrderActivity));
+                //intent.PutExtra("addedItems", addedItems.);
+
+                StartActivityForResult(intent, 0);
             };
         }
 
@@ -69,6 +70,7 @@ namespace DTG_Ordering_System
 			DBRepository dbr = new DBRepository();
 
 			dbr.setQuantity(items[e.Position].Id, e.Quantity);
+            addedItems.Add(items[e.Position]);
 
             adapter.NotifyDataSetChanged();
         }

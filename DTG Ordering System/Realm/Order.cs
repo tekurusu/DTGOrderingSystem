@@ -1,21 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+using Realms;
 
 namespace DTG_Ordering_System
 {
-    class Order
+    public class Order : RealmObject
     {
-        public int Id { get; set; }
+        [ObjectId]
+        public string Id { get; set; }
         public string DeliveryDate { get; set; }
-        public bool HasSent { get; set; }
+        public string HasSent { get; set; }
+        public RealmList<OrderedItem> OrderedItems { get; }
     }
 }

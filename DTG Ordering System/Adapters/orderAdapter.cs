@@ -54,14 +54,6 @@ namespace DTG_Ordering_System
             orderDate.Text = orders[position].DeliveryDate;
 
             TextView hasSent = row.FindViewById<TextView>(Resource.Id.hasSent);
-            if (orders[position].HasSent == true)
-            {
-                hasSent.Text = "Sent";
-            }
-            else
-            {
-                hasSent.Text = "Not yet sent";
-            }
 
             Button editButton = row.FindViewById<Button>(Resource.Id.orderEdit);
             editButton.Click += (object sender, EventArgs e) => { Console.WriteLine("wew"); };

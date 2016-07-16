@@ -33,15 +33,15 @@ namespace DTG_Ordering_System
 			ArrayAdapter categoryAdapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleListItem1, categoryName);
             categoryList.Adapter = categoryAdapter;
 
-            categoryList.ItemClick += CategoryList_ItemClick;
-            
+            categoryList.ItemClick += CategoryList_ItemClick;  
         }
 
         private void CategoryList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             var intent = new Intent(this, typeof(ItemsActivity));
 			var cat = categories[e.Position];
-			intent.PutExtra("CategoryID", cat.Id);
+			intent.PutExtra("categoryId", cat.Id);
+            intent.PutExtra("categoryName", cat.Name);
             StartActivity(intent);
         }
     }

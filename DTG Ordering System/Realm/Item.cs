@@ -1,4 +1,4 @@
-using System;
+    using System;
 using Realms;
 
 namespace DTG_Ordering_System
@@ -12,5 +12,6 @@ namespace DTG_Ordering_System
         public int Quantity { get; set; }
 
         public Category Category { get; set; }
-	}
+        public RealmList<OrderedItem> OrderedItems { get; }
+    }
 }

@@ -119,6 +119,26 @@ namespace DTG_Ordering_System
 			}
 			realm.Close();
 		}
+
+        public void syncDB() //temporary load of database files :))
+        {
+            deleteDB();
+            createDB();
+
+            string meat = insertCategory("Meat");
+            string spices = insertCategory("Spices");
+            string others = insertCategory("Others");
+
+            insertItem("Chicken", "kilos", getCategory(meat));
+            insertItem("Beef", "cows", getCategory(meat));
+            insertItem("Pork", "pigs", getCategory(meat));
+            insertItem("Paprika", "manyak", getCategory(spices));
+            insertItem("Salt", "mats", getCategory(spices));
+            insertItem("Sugar", "subjects", getCategory(spices));
+            insertItem("Broom", "top 1", getCategory(others));
+            insertItem("Fan", "grad school", getCategory(others));
+            insertItem("Water", "lightning", getCategory(others));
+        }
 	}
 }
 
