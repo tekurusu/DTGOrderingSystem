@@ -11,17 +11,17 @@ namespace DTG_Ordering_System
 	public class DBRepository
 	{
 		private Realm realm;
+		private static string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "default.realm");
+		RealmConfiguration config = new RealmConfiguration(dbPath, true);
 
-        //code to create the database
         public void createDB()
 		{
-			realm = Realm.GetInstance();
+			Realm.GetInstance(config);
 		}
 
-		//code to insert data
 		public void insertItem(string itemName, string itemUnit, Category category)
 		{
-			realm = Realm.GetInstance();
+			realm = Realm.GetInstance(config);
 
 			using (var transaction = realm.BeginWrite())
 			{
@@ -40,7 +40,7 @@ namespace DTG_Ordering_System
 
         public string insertCategory(string categoryName)
         {
-			realm = Realm.GetInstance();
+			realm = Realm.GetInstance(config);
             string UUID;
 
 			using (var transaction = realm.BeginWrite())
@@ -60,12 +60,12 @@ namespace DTG_Ordering_System
 
         public Category getCategory(string categoryId)
         {
-            return Realm.GetInstance().All<Category>().Where(c => c.Id == categoryId).First();
+			return Realm.GetInstance(config).All<Category>().Where(c => c.Id == categoryId).First();
         }
 
         public Item getItem(string guid)
         {
-            return Realm.GetInstance().All<Item>().Where(c => c.Id == guid).First();
+            return Realm.GetInstance(config).All<Item>().Where(c => c.Id == guid).First();
         }
 
 		public List<Item> getAllItems(string categoryId)
@@ -83,7 +83,7 @@ namespace DTG_Ordering_System
 
 		public List<Category> getAllCategories()
 		{
-			realm = Realm.GetInstance();
+			realm = Realm.GetInstance(config);
 
 			var allCategories = realm.All<Category>().OrderBy(i => i.Name);
 			List<Category> categories = new List<Category>();
@@ -97,7 +97,7 @@ namespace DTG_Ordering_System
 
 		public void setQuantity(string itemId, int quantity)
 		{ 
-			realm = Realm.GetInstance();
+			realm = Realm.GetInstance(config);
 
 			using (var transaction = realm.BeginWrite())
 			{
@@ -110,7 +110,7 @@ namespace DTG_Ordering_System
 
         public void deleteDB()
         {
-			realm = Realm.GetInstance();
+			realm = Realm.GetInstance(config);
 
 			using (var transaction = realm.BeginWrite())
 			{
@@ -122,22 +122,24 @@ namespace DTG_Ordering_System
 
         public void syncDB() //temporary load of database files :))
         {
-            deleteDB();
-            createDB();
+			if (!File.Exists(dbPath))
+			{
+				createDB();
 
-            string meat = insertCategory("Meat");
-            string spices = insertCategory("Spices");
-            string others = insertCategory("Others");
+				string meat = insertCategory("Meat");
+				string spices = insertCategory("Spices");
+				string others = insertCategory("Others");
 
-            insertItem("Chicken", "kilos", getCategory(meat));
-            insertItem("Beef", "cows", getCategory(meat));
-            insertItem("Pork", "pigs", getCategory(meat));
-            insertItem("Paprika", "manyak", getCategory(spices));
-            insertItem("Salt", "mats", getCategory(spices));
-            insertItem("Sugar", "subjects", getCategory(spices));
-            insertItem("Broom", "top 1", getCategory(others));
-            insertItem("Fan", "grad school", getCategory(others));
-            insertItem("Water", "lightning", getCategory(others));
+				insertItem("Chicken", "kilos", getCategory(meat));
+				insertItem("Beef", "cows", getCategory(meat));
+				insertItem("Pork", "pigs", getCategory(meat));
+				insertItem("Paprika", "manyak", getCategory(spices));
+				insertItem("Salt", "mats", getCategory(spices));
+				insertItem("Sugar", "subjects", getCategory(spices));
+				insertItem("Broom", "top 1", getCategory(others));
+				insertItem("Fan", "grad school", getCategory(others));
+				insertItem("Water", "lightning", getCategory(others));
+			}
         }
 	}
 }
