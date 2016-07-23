@@ -42,7 +42,14 @@ namespace DTG_Ordering_System
 			var cat = categories[e.Position];
 			intent.PutExtra("categoryId", cat.Id);
             intent.PutExtra("categoryName", cat.Name);
-            StartActivity(intent);
+            StartActivityForResult(intent,0);
+        }
+
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            SetResult(Result.Ok, data);
+            Finish();
         }
     }
 }

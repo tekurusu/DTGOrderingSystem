@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Newtonsoft.Json;
 
 namespace DTG_Ordering_System
 {
@@ -60,9 +61,6 @@ namespace DTG_Ordering_System
             try
             {
                 adapter = new newOrderAdapter(this, items);
-
-                Item indexerTest = adapter[1]; //Item at index 1
-
                 mListView.Adapter = adapter;
             } catch
             {
@@ -72,7 +70,7 @@ namespace DTG_Ordering_System
             addNewButton.Click += (object sender, EventArgs e) =>
             {
                 Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
-                StartActivity(intent);
+                StartActivityForResult(intent,0);
             };
             
         }
@@ -81,9 +79,26 @@ namespace DTG_Ordering_System
         {
             base.OnActivityResult(requestCode, resultCode, data);
 
-            if (requestCode == 0)
+            //if the activity is ok retrieve json then add to the item list.
+            if (resultCode == Result.Ok)
             {
+                var message = data.GetStringExtra("addedItems");
+                List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
 
+                foreach (Item i in addedItems)
+                {
+                    if (items.Exists(item => item.Id == i.Id) == true)
+                    {
+                        items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                    }
+
+                    else
+                    {
+                        items.Add(i);
+                    }
+                }
+
+                adapter.NotifyDataSetChanged();
             }
         }
     }

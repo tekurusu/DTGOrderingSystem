@@ -6,6 +6,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DTG_Ordering_System
 {
@@ -29,7 +30,9 @@ namespace DTG_Ordering_System
             mListView = FindViewById<ListView>(Resource.Id.itemListView);
             itemAdd = FindViewById<Button>(Resource.Id.itemAdd);
 
+            //clear lists if start of new activity.
 			items.Clear();
+            addedItems.Clear();
 
 			DBRepository dbr = new DBRepository();
             items = dbr.getAllItems(Intent.Extras.GetString("categoryId"));
@@ -58,10 +61,12 @@ namespace DTG_Ordering_System
 
             itemAdd.Click += delegate
             {
-                Intent intent = new Intent(ApplicationContext, typeof(NewOrderActivity));
-                //intent.PutExtra("addedItems", addedItems.);
+                Intent intent = new Intent();
+                string json = JsonConvert.SerializeObject(addedItems, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                intent.PutExtra("addedItems", json);
+                SetResult(Result.Ok, intent);
+                Finish();
 
-                StartActivityForResult(intent, 0);
             };
         }
 
