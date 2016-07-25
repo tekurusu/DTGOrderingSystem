@@ -16,11 +16,12 @@ namespace DTG_Ordering_System
     {
         private List<Order> orders;
         private Context context;
-
-        public OrderAdapter(Context context, List<Order> orders)
+        private Activity activity;
+        public OrderAdapter(Activity activity, List<Order> orders, Context context)
         {
             this.context = context;
             this.orders = orders;
+            this.activity = activity;
         }
 
         public override int Count
@@ -47,9 +48,6 @@ namespace DTG_Ordering_System
                 row = LayoutInflater.From(context).Inflate(Resource.Layout.orderListCustomRow, null, false);
             }
 
-            TextView orderNumber = row.FindViewById<TextView>(Resource.Id.orderNumber);
-            orderNumber.Text = orders[position].Id.ToString();
-
             TextView orderDate = row.FindViewById<TextView>(Resource.Id.orderDate);
             orderDate.Text = orders[position].DeliveryDate;
 
@@ -62,13 +60,52 @@ namespace DTG_Ordering_System
             {
                 hasSent.Text = "Not yet sent";
             }
+            Button deleteButton = row.FindViewById<Button>(Resource.Id.deleteButton);
+            deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity));
+            Button editButton = row.FindViewById<Button>(Resource.Id.editButton);
+            editButton.SetOnClickListener(new EditButtonClickListener(activity));
+            //editButton.Click += (object sender, EventArgs e) => { Console.WriteLine("wew"); };
 
-            Button editButton = row.FindViewById<Button>(Resource.Id.orderEdit);
-            editButton.Click += (object sender, EventArgs e) => { Console.WriteLine("wew"); };
-            Button deleteButton = row.FindViewById<Button>(Resource.Id.orderDelete);
-            deleteButton.Click += (object sender, EventArgs e) => { Console.WriteLine("weh"); };
+
 
             return row;
+        }
+        private class EditButtonClickListener : Java.Lang.Object, View.IOnClickListener
+        {
+            private Activity activity;
+
+            public EditButtonClickListener(Activity activity)
+            {
+                this.activity = activity;
+            }
+
+            public void OnClick(View v)
+            {
+                //string name = (string)v.Tag;
+                //string text = string.Format("{0} Button Click.", name);
+                //Toast.MakeText(this.activity, text, ToastLength.Short).Show();
+                Console.WriteLine("wew");
+                Intent intent = new Intent(activity.ApplicationContext, typeof(CategoriesActivity));
+                activity.StartActivity(intent);
+            }
+        }
+
+        private class DeleteButtonClickListener : Java.Lang.Object, View.IOnClickListener
+        {
+            private Activity activity;
+
+            public DeleteButtonClickListener(Activity activity)
+            {
+                this.activity = activity;
+            }
+
+            public void OnClick(View v)
+            {
+                //string name = (string)v.Tag;
+                //string text = string.Format("{0} Button Click.", name);
+                //Toast.MakeText(this.activity, text, ToastLength.Short).Show();
+                Console.WriteLine("grabe");
+            }
         }
     }
 }
