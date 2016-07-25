@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Newtonsoft.Json;
 
 namespace DTG_Ordering_System
 {
@@ -16,6 +17,7 @@ namespace DTG_Ordering_System
     public class NewOrderActivity : Activity
     {
         private static List<Item> items = new List<Item>();
+        private static List<OrderedItem> orderedItems = new List<OrderedItem>();
         private ListView mListView;
         private newOrderAdapter adapter;
         private Button addNewButton;
@@ -34,6 +36,7 @@ namespace DTG_Ordering_System
             deliveryDate = FindViewById<TextView>(Resource.Id.deliveryDate);
             editDate = FindViewById<Button>(Resource.Id.editDate);
 
+            //code for datepicker
             DateTime now = DateTime.Now.ToLocalTime();
             dateHolder = now;
             String dateNow = String.Format("{0:dd MMM yy}", now);
@@ -55,24 +58,48 @@ namespace DTG_Ordering_System
                 frag.Show(FragmentManager, DatePickerFragment.TAG);
             };
 
-            items.Clear();
+            try
+            {
+                adapter = new newOrderAdapter(this, items);
+                mListView.Adapter = adapter;
+            } catch
+            {
 
-                items.Add(new Item() { Name = "Chicken", Unit = "cuts", Quantity = 50 });
-                items.Add(new Item() { Name = "Pork", Unit = "pigs", Quantity = 32 });
-                items.Add(new Item() { Name = "Fish", Unit = "fillets", Quantity = 5 });
-
-            adapter = new newOrderAdapter(this, items);
-
-            Item indexerTest = adapter[1]; //Item at index 1
-
-            mListView.Adapter = adapter;
+            }
 
             addNewButton.Click += (object sender, EventArgs e) =>
             {
                 Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
-                StartActivity(intent);
+                StartActivityForResult(intent,0);
             };
             
+        }
+
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+
+            //if the activity is ok retrieve json then add to the item list.
+            if (resultCode == Result.Ok)
+            {
+                var message = data.GetStringExtra("addedItems");
+                List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
+
+                foreach (Item i in addedItems)
+                {
+                    if (items.Exists(item => item.Id == i.Id) == true)
+                    {
+                        items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                    }
+
+                    else
+                    {
+                        items.Add(i);
+                    }
+                }
+
+                adapter.NotifyDataSetChanged();
+            }
         }
     }
 }

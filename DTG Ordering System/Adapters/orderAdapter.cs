@@ -52,19 +52,13 @@ namespace DTG_Ordering_System
             orderDate.Text = orders[position].DeliveryDate;
 
             TextView hasSent = row.FindViewById<TextView>(Resource.Id.hasSent);
-            if (orders[position].HasSent == true)
-            {
-                hasSent.Text = "Sent";
-            }
-            else
-            {
-                hasSent.Text = "Not yet sent";
-            }
+            hasSent.Text = orders[position].HasSent;
             Button deleteButton = row.FindViewById<Button>(Resource.Id.deleteButton);
             deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity));
             Button editButton = row.FindViewById<Button>(Resource.Id.editButton);
             editButton.SetOnClickListener(new EditButtonClickListener(activity));
             //editButton.Click += (object sender, EventArgs e) => { Console.WriteLine("wew"); };
+
 
 
 

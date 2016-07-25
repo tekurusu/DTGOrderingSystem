@@ -12,13 +12,15 @@ using Android.Widget;
 
 namespace DTG_Ordering_System
 {
-    [Activity(Label = "My Orders", MainLauncher = true, Icon = "@drawable/icon")]
-    public class OrdersActivity : Activity
+	[Activity(Label = "My Orders", MainLauncher = true, Icon = "@drawable/icon")]
+	public class OrdersActivity : Activity
     {
         private ListView mListView;
-        private static List<Order> orders;
+        private static List<Order> orders = new List<Order>();
         private Button addButton;
-        private int currentPosition;
+        private Button syncButton;
+
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -27,11 +29,7 @@ namespace DTG_Ordering_System
 
             mListView = FindViewById<ListView>(Resource.Id.orderListView);
             addButton = FindViewById<Button>(Resource.Id.orderAdd);
-
-            orders = new List<Order>();
-            orders.Add(new Order() { Id = 1000, DeliveryDate = "6/02/16", HasSent = true });
-            orders.Add(new Order() { Id = 1001, DeliveryDate = "6/03/16", HasSent = false });
-            orders.Add(new Order() { Id = 1002, DeliveryDate = "6/17/16", HasSent = true });
+            syncButton = FindViewById<Button>(Resource.Id.syncButton);
 
             OrderAdapter adapter = new OrderAdapter(this, orders, this);
             mListView.Adapter = adapter;
@@ -55,6 +53,14 @@ namespace DTG_Ordering_System
             {
                 Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
                 StartActivity(intent);
+            };
+
+            syncButton.Click += (object sender, EventArgs e) =>
+            {
+                DBRepository dbr = new DBRepository();
+                dbr.syncDB();
+
+                Toast.MakeText(this, "Initial database synced successfully", ToastLength.Short).Show();
             };
         }
 
