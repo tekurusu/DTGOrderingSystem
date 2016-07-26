@@ -175,7 +175,7 @@ namespace DTG_Ordering_System
 		//	return orderedItems;
 		//}
 
-		public string getAllOrdersItems(string orderId)
+		public string getAllOrderedItems(string orderId)
 		{
 			var o = getOrder(orderId).OrderedItems;
 			string orderedItems = "";
@@ -187,6 +187,21 @@ namespace DTG_Ordering_System
 			}
 
 			return orderedItems;
+		}
+
+		public string getAllOrders()
+		{
+			realm = Realm.GetInstance(config);
+
+			var allOrders = realm.All<Order>();
+			string orders = "";
+			orders += "Retrieving All Orders";
+
+			foreach (var o in allOrders)
+			{
+				orders += String.Format("\n {0}", o.Id);
+			}
+			return orders;
 		}
 
         public void deleteDB()

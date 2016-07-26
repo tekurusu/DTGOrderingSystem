@@ -93,12 +93,14 @@ namespace DTG_Ordering_System
 				dbr.insertOrderedItem(i.Quantity, i, dbr.getOrder(orderId));
 			}
 
-			Toast.MakeText(this, dbr.getAllOrdersItems(orderId), ToastLength.Long).Show();
+			Toast.MakeText(this, dbr.getAllOrderedItems(orderId), ToastLength.Long).Show();
 		}
 
 		void SendButton_OnClick(object sender, EventArgs e)
 		{
+			DBRepository dbr = new DBRepository();
 
+			Toast.MakeText(this, dbr.getAllOrders(), ToastLength.Long).Show();
 		}
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
