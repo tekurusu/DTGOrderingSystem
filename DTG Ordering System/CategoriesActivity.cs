@@ -10,7 +10,7 @@ using Mono;
 
 namespace DTG_Ordering_System
 {
-    [Activity(Label = "Categories Screen", Icon = "@drawable/icon")]
+    [Activity(Label = "Choose a Category:", Icon = "@drawable/icon")]
     public class CategoriesActivity : Activity
     {
 		List<Category> categories = new List<Category>();

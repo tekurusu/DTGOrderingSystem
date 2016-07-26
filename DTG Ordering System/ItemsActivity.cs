@@ -25,7 +25,7 @@ namespace DTG_Ordering_System
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.itemList);
-            this.Title = "Add " + Intent.Extras.GetString("categoryName");
+            this.Title = Intent.Extras.GetString("categoryName");
 
             mListView = FindViewById<ListView>(Resource.Id.itemListView);
             itemAdd = FindViewById<Button>(Resource.Id.itemAdd);
@@ -35,6 +35,7 @@ namespace DTG_Ordering_System
             addedItems.Clear();
 
 			DBRepository dbr = new DBRepository();
+            dbr.clearQuantity(Intent.Extras.GetString("categoryId"));
             items = dbr.getAllItems(Intent.Extras.GetString("categoryId"));
 
             adapter = new ItemAdapter(this, items);
@@ -75,7 +76,10 @@ namespace DTG_Ordering_System
 			DBRepository dbr = new DBRepository();
 
 			dbr.setQuantity(items[e.Position].Id, e.Quantity);
-            addedItems.Add(items[e.Position]);
+            if (e.Quantity != 0)
+            {
+                addedItems.Add(items[e.Position]);
+            }
 
             adapter.NotifyDataSetChanged();
         }

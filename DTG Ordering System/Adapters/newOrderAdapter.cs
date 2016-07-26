@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Android.Graphics;
 
 namespace DTG_Ordering_System
 {
@@ -49,6 +50,7 @@ namespace DTG_Ordering_System
 
             TextView itemName = row.FindViewById<TextView>(Resource.Id.itemName);
             itemName.Text = items[position].Name;
+            itemName.SetTextColor(Color.SpringGreen);
 
             TextView itemUnit = row.FindViewById<TextView>(Resource.Id.itemUnit);
             itemUnit.Text = items[position].Unit;

@@ -10,13 +10,13 @@
         android:layout_width="268.0dp"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout1"
-        android:layout_marginRight="0dp"
+        android:layout_marginRight="27.0dp"
         android:layout_marginLeft="5dp"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp">
         <TextView
             android:text="Item Name"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/itemName" />
@@ -29,7 +29,7 @@
     </LinearLayout>
     <TextView
         android:text="x "
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView1"

@@ -23,7 +23,7 @@
         android:weightSum="100"
         android:id="@+id/logOutButton">
         <Button
-            android:text="Sync"
+            android:text="Reload DB"
             android:layout_width="wrap_content"
             android:layout_weight="50"
             android:layout_height="match_parent"

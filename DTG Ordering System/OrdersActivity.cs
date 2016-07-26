@@ -60,7 +60,7 @@ namespace DTG_Ordering_System
                 DBRepository dbr = new DBRepository();
                 dbr.syncDB();
 
-                Toast.MakeText(this, "Initial database synced successfully", ToastLength.Short).Show();
+                Toast.MakeText(this, "Database reloaded from scratch!", ToastLength.Short).Show();
             };
         }
 
