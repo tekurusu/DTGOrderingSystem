@@ -108,6 +108,19 @@ namespace DTG_Ordering_System
 			}
 		}
 
+		public void deleteOrderedItem(string itemId)
+		{
+			//realm = Realm.GetInstance(config);
+			//var item = getItem(itemId);
+
+			//using (var transaction = realm.BeginWrite())
+			//{
+			//	realm.Remove(item);
+			//	transaction.Commit();
+			//}
+			//realm.Close();
+		}
+
         public void deleteDB()
         {
 			realm = Realm.GetInstance(config);

@@ -72,8 +72,9 @@ namespace DTG_Ordering_System
                 Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
                 StartActivityForResult(intent,0);
             };
-            
-        }
+
+			mListView.ItemLongClick += DeleteItem_OnLongClick;
+		}
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
@@ -101,5 +102,19 @@ namespace DTG_Ordering_System
                 adapter.NotifyDataSetChanged();
             }
         }
+
+		void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
+		{
+			var callDialog = new AlertDialog.Builder(this);
+			callDialog.SetMessage("Delete " + items[e.Position].Name + "?");
+			callDialog.SetNeutralButton("Delete", delegate
+			{
+				items.RemoveAt(e.Position);
+				adapter.NotifyDataSetChanged();
+
+			});
+			callDialog.SetNegativeButton("Cancel", delegate { });
+			callDialog.Show();
+		}
     }
 }
