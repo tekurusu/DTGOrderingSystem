@@ -41,7 +41,7 @@ namespace DTG_Ordering_System
             adapter = new ItemAdapter(this, items);
 
             //testing the adapter
-            Item indexerTest = adapter[1]; //Item at index 1
+            //Item indexerTest = adapter[1]; //Item at index 1
 
             mListView.Adapter = adapter;
             mListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>

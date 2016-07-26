@@ -108,22 +108,26 @@ namespace DTG_Ordering_System
 			}
 		}
 
-		public void insertOrderedItem(int quantity, Item item, Order order)
-		{
-			realm = Realm.GetInstance(config);
+        public void insertOrderedItems(List<Item> items, string orderId)
+        {
+            realm = Realm.GetInstance(config);
 
-			using (var transaction = realm.BeginWrite())
-			{
-				var orderedItem = realm.CreateObject<OrderedItem>();
-				orderedItem.Quantity = quantity;
-				orderedItem.Item = item;
-				orderedItem.Order = order;
-				item.OrderedItems.Add(orderedItem);
-				order.OrderedItems.Add(orderedItem);
+            using (var transaction = realm.BeginWrite())
+            {
+                foreach (Item i in items)
+                {
+                    var orderedItem = realm.CreateObject<OrderedItem>();
+                    orderedItem.Quantity = i.Quantity;
+                    orderedItem.Item = getItem(i.Id);
+                    orderedItem.Order = getOrder(orderId);
 
-				transaction.Commit();
-			}
-		}
+                    getItem(i.Id).OrderedItems.Add(orderedItem);
+                    getOrder(orderId).OrderedItems.Add(orderedItem);
+                }
+
+                transaction.Commit();
+            }
+        }
 
 		public string insertOrder(string deliveryDate)
 		{

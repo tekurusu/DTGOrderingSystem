@@ -88,10 +88,7 @@ namespace DTG_Ordering_System
 			DBRepository dbr = new DBRepository();
 			string orderId = dbr.insertOrder(deliveryDate.Text);
 
-			foreach (Item i in items)
-			{
-				dbr.insertOrderedItem(i.Quantity, i, dbr.getOrder(orderId));
-			}
+            dbr.insertOrderedItems(items, orderId);
 
 			Toast.MakeText(this, dbr.getAllOrderedItems(orderId), ToastLength.Long).Show();
 		}
