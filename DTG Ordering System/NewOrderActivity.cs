@@ -83,23 +83,26 @@ namespace DTG_Ordering_System
             //if the activity is ok retrieve json then add to the item list.
             if (resultCode == Result.Ok)
             {
-                var message = data.GetStringExtra("addedItems");
-                List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
+				if (data != null)
+				{
+					var message = data.GetStringExtra("addedItems");
+					List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
 
-                foreach (Item i in addedItems)
-                {
-                    if (items.Exists(item => item.Id == i.Id) == true)
-                    {
-                        items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
-                    }
+					foreach (Item i in addedItems)
+					{
+						if (items.Exists(item => item.Id == i.Id) == true)
+						{
+							items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
+						}
 
-                    else
-                    {
-                        items.Add(i);
-                    }
-                }
+						else
+						{
+							items.Add(i);
+						}
+					}
 
-                adapter.NotifyDataSetChanged();
+					adapter.NotifyDataSetChanged();
+				}
             }
         }
 

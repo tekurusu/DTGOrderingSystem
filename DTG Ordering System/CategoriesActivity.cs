@@ -49,7 +49,8 @@ namespace DTG_Ordering_System
         {
             base.OnActivityResult(requestCode, resultCode, data);
             SetResult(Result.Ok, data);
-            Finish();
+			if (data != null)
+            	Finish();
         }
     }
 }
