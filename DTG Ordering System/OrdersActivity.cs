@@ -26,13 +26,16 @@ namespace DTG_Ordering_System
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.orderList);
-
+            DBRepository dbr = new DBRepository();
+            orders = dbr.getAllOrders();
             mListView = FindViewById<ListView>(Resource.Id.orderListView);
+            mListView.Clickable = true;
             addButton = FindViewById<Button>(Resource.Id.orderAdd);
             syncButton = FindViewById<Button>(Resource.Id.syncButton);
-
+            
             OrderAdapter adapter = new OrderAdapter(this, orders, this);
             mListView.Adapter = adapter;
+            
             if (mListView != null)
             {
                 mListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
@@ -56,8 +59,7 @@ namespace DTG_Ordering_System
             };
 
             syncButton.Click += (object sender, EventArgs e) =>
-            {
-                DBRepository dbr = new DBRepository();
+            { 
                 dbr.syncDB();
 
                 Toast.MakeText(this, "Database reloaded from scratch!", ToastLength.Short).Show();

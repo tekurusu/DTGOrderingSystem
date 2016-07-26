@@ -193,20 +193,35 @@ namespace DTG_Ordering_System
 			return orderedItems;
 		}
 
-		public string getAllOrders()
-		{
-			realm = Realm.GetInstance(config);
+		//public string getAllOrders()
+		//{
+		//	realm = Realm.GetInstance(config);
 
-			var allOrders = realm.All<Order>();
-			string orders = "";
-			orders += "Retrieving All Orders";
+		//	var allOrders = realm.All<Order>();
+		//	string orders = "";
+		//	orders += "Retrieving All Orders";
 
-			foreach (var o in allOrders)
-			{
-				orders += String.Format("\n {0}", o.Id);
-			}
-			return orders;
-		}
+		//	foreach (var o in allOrders)
+		//	{
+		//		orders += String.Format("\n {0}", o.Id);
+		//	}
+		//	return orders;
+		//}
+
+        public List<Order> getAllOrders()
+        {
+            realm = Realm.GetInstance(config);
+
+            var allOrders = realm.All<Order>();
+            List<Order> orders = new List<Order>();
+            
+
+            foreach (Order o in allOrders)
+            {
+                orders.Add(o);
+            }
+            return orders;
+        }
 
         public void deleteDB()
         {

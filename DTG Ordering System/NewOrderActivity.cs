@@ -97,7 +97,7 @@ namespace DTG_Ordering_System
 		{
 			DBRepository dbr = new DBRepository();
 
-			Toast.MakeText(this, dbr.getAllOrders(), ToastLength.Long).Show();
+			//Toast.MakeText(this, dbr.getAllOrders(), ToastLength.Long).Show();
 		}
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
