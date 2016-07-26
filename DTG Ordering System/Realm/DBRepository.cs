@@ -63,9 +63,9 @@ namespace DTG_Ordering_System
 			return Realm.GetInstance(config).All<Category>().Where(c => c.Id == categoryId).First();
         }
 
-        public Item getItem(string guid)
+        public Item getItem(string itemId)
         {
-            return Realm.GetInstance(config).All<Item>().Where(c => c.Id == guid).First();
+            return Realm.GetInstance(config).All<Item>().Where(c => c.Id == itemId).First();
         }
 
 		public List<Item> getAllItems(string categoryId)
@@ -108,17 +108,85 @@ namespace DTG_Ordering_System
 			}
 		}
 
-		public void deleteOrderedItem(string itemId)
+		public void insertOrderedItem(int quantity, Item item, Order order)
 		{
-			//realm = Realm.GetInstance(config);
-			//var item = getItem(itemId);
+			realm = Realm.GetInstance(config);
 
-			//using (var transaction = realm.BeginWrite())
-			//{
-			//	realm.Remove(item);
-			//	transaction.Commit();
-			//}
-			//realm.Close();
+			using (var transaction = realm.BeginWrite())
+			{
+				var orderedItem = realm.CreateObject<OrderedItem>();
+				orderedItem.Quantity = quantity;
+				orderedItem.Item = item;
+				orderedItem.Order = order;
+				item.OrderedItems.Add(orderedItem);
+				order.OrderedItems.Add(orderedItem);
+
+				transaction.Commit();
+			}
+		}
+
+		public string insertOrder(string deliveryDate)
+		{
+			realm = Realm.GetInstance(config);
+
+			using (var transaction = realm.BeginWrite())
+			{
+				var order = realm.CreateObject<Order>();
+				string UUID = Guid.NewGuid().ToString();
+
+				order.Id = UUID;
+				order.DeliveryDate = deliveryDate;
+				order.HasSent = false;
+
+				transaction.Commit();
+
+				return order.Id;
+			}
+		}
+
+		public void sendOrder(string orderId)
+		{
+			realm = Realm.GetInstance(config);
+
+			using (var transaction = realm.BeginWrite())
+			{
+				var someOrder = realm.All<Order>().Where(o => o.Id == orderId).First();
+				someOrder.HasSent = true;
+
+				transaction.Commit();
+			}
+		}
+
+		public Order getOrder(string orderId)
+		{
+			return Realm.GetInstance(config).All<Order>().Where(o => o.Id == orderId).First();
+		}
+
+		//public List<OrderedItem> getAllOrdersItems(string orderId)
+		//{
+		//	List<OrderedItem> orderedItems = new List<OrderedItem>();
+		//	var o = getOrder(orderId).OrderedItems;
+
+		//	foreach (var oI in o)
+		//	{
+		//		orderedItems.Add(oI);
+		//	}
+
+		//	return orderedItems;
+		//}
+
+		public string getAllOrdersItems(string orderId)
+		{
+			var o = getOrder(orderId).OrderedItems;
+			string orderedItems = "";
+			orderedItems += "Retrieving Ordered Items from Order";
+
+			foreach (var oI in o)
+			{
+				orderedItems += String.Format("\n {0} | {1}", oI.Item.Name, oI.Item.Quantity);
+			}
+
+			return orderedItems;
 		}
 
         public void deleteDB()

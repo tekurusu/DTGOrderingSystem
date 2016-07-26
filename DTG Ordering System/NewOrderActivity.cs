@@ -20,8 +20,10 @@ namespace DTG_Ordering_System
         private static List<OrderedItem> orderedItems = new List<OrderedItem>();
         private ListView mListView;
         private newOrderAdapter adapter;
-        private Button addNewButton;
-        private TextView deliveryDate;
+		private TextView deliveryDate;
+        private Button addItemsButton;
+		private Button saveButton;
+		private Button sendButton;
         private Button editDate;
         private DateTime dateHolder;
 
@@ -32,7 +34,9 @@ namespace DTG_Ordering_System
             SetContentView(Resource.Layout.newOrder);
 
             mListView = FindViewById<ListView>(Resource.Id.selectedItemsListView);
-            addNewButton = FindViewById<Button>(Resource.Id.addNewItem);
+			addItemsButton = FindViewById<Button>(Resource.Id.addItems);
+			saveButton = FindViewById<Button>(Resource.Id.saveButton);
+			sendButton = FindViewById<Button>(Resource.Id.sendButton);
             deliveryDate = FindViewById<TextView>(Resource.Id.deliveryDate);
             editDate = FindViewById<Button>(Resource.Id.editDate);
 
@@ -62,18 +66,39 @@ namespace DTG_Ordering_System
             {
                 adapter = new newOrderAdapter(this, items);
                 mListView.Adapter = adapter;
-            } catch
+            } 
+			catch
             {
 
             }
 
-            addNewButton.Click += (object sender, EventArgs e) =>
+            addItemsButton.Click += (object sender, EventArgs e) =>
             {
                 Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
                 StartActivityForResult(intent,0);
             };
 
 			mListView.ItemLongClick += DeleteItem_OnLongClick;
+			saveButton.Click += SaveButton_OnClick;
+			sendButton.Click += SendButton_OnClick;
+		}
+
+		void SaveButton_OnClick(object sender, EventArgs e)
+		{
+			DBRepository dbr = new DBRepository();
+			string orderId = dbr.insertOrder(deliveryDate.Text);
+
+			foreach (Item i in items)
+			{
+				dbr.insertOrderedItem(i.Quantity, i, dbr.getOrder(orderId));
+			}
+
+			Toast.MakeText(this, dbr.getAllOrdersItems(orderId), ToastLength.Long).Show();
+		}
+
+		void SendButton_OnClick(object sender, EventArgs e)
+		{
+
 		}
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)

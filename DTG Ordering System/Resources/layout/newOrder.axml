@@ -52,19 +52,19 @@
             android:text="Save"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/button3"
+            android:id="@+id/saveButton"
             android:layout_weight="25" />
         <Button
-            android:text="New Item"
+            android:text="Add Items"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/addNewItem" 
+            android:id="@+id/addItems"
             android:layout_weight="50" />
         <Button
             android:text="Send"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/button4" 
+            android:id="@+id/sendButton"
             android:layout_weight="25" />
     </LinearLayout>
 </LinearLayout>

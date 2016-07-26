@@ -8,7 +8,7 @@ namespace DTG_Ordering_System
         [ObjectId]
         public string Id { get; set; }
         public string DeliveryDate { get; set; }
-        public string HasSent { get; set; }
+        public bool HasSent { get; set; }
         public RealmList<OrderedItem> OrderedItems { get; }
     }
 }

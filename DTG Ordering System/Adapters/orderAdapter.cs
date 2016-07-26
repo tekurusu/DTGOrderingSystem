@@ -52,7 +52,7 @@ namespace DTG_Ordering_System
             orderDate.Text = orders[position].DeliveryDate;
 
             TextView hasSent = row.FindViewById<TextView>(Resource.Id.hasSent);
-            hasSent.Text = orders[position].HasSent;
+			hasSent.Text = orders[position].HasSent.ToString();
             Button deleteButton = row.FindViewById<Button>(Resource.Id.deleteButton);
             deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity));
             Button editButton = row.FindViewById<Button>(Resource.Id.editButton);
