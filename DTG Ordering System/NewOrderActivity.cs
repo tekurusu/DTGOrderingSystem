@@ -97,11 +97,14 @@ namespace DTG_Ordering_System
                 intent.PutExtra("OrderId", orderId);
                 //SetResult(Result.Ok, intent);
                 StartActivityForResult(intent, 1);
+
+				items.Clear();
+				adapter.NotifyDataSetChanged();
             });
             callDialog.SetNegativeButton("Cancel", delegate { });
             callDialog.Show();
 
-            //Toast.MakeText(this, dbr.getAllOrderedItems(orderId), ToastLength.Long).Show();
+			//Toast.MakeText(this, dbr.getAllOrderedItems(orderId), ToastLength.Long).Show();
 		}
 
 		void SendButton_OnClick(object sender, EventArgs e)
