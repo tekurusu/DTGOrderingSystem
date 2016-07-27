@@ -67,7 +67,6 @@ namespace DTG_Ordering_System
                 intent.PutExtra("addedItems", json);
                 SetResult(Result.Ok, intent);
                 Finish();
-
             };
         }
 

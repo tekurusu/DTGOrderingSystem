@@ -85,12 +85,23 @@ namespace DTG_Ordering_System
 
 		void SaveButton_OnClick(object sender, EventArgs e)
 		{
-			DBRepository dbr = new DBRepository();
-			string orderId = dbr.insertOrder(deliveryDate.Text);
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Are you sure you want to save this order as a draft?");
+            callDialog.SetNeutralButton("OK", delegate
+            {
+                DBRepository dbr = new DBRepository();
+                string orderId = dbr.insertOrder(deliveryDate.Text);
+                dbr.insertOrderedItems(items, orderId);
 
-            dbr.insertOrderedItems(items, orderId);
+                Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+                intent.PutExtra("OrderId", orderId);
+                //SetResult(Result.Ok, intent);
+                StartActivityForResult(intent, 1);
+            });
+            callDialog.SetNegativeButton("Cancel", delegate { });
+            callDialog.Show();
 
-			Toast.MakeText(this, dbr.getAllOrderedItems(orderId), ToastLength.Long).Show();
+            //Toast.MakeText(this, dbr.getAllOrderedItems(orderId), ToastLength.Long).Show();
 		}
 
 		void SendButton_OnClick(object sender, EventArgs e)
@@ -138,7 +149,6 @@ namespace DTG_Ordering_System
 			{
 				items.RemoveAt(e.Position);
 				adapter.NotifyDataSetChanged();
-
 			});
 			callDialog.SetNegativeButton("Cancel", delegate { });
 			callDialog.Show();

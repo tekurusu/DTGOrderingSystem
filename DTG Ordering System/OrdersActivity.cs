@@ -19,28 +19,28 @@ namespace DTG_Ordering_System
         private static List<Order> orders = new List<Order>();
         private Button addButton;
         private Button syncButton;
-
+        private OrderAdapter adapter;
+        DBRepository dbr = new DBRepository();
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.orderList);
-            DBRepository dbr = new DBRepository();
+            
             orders = dbr.getAllOrders();
             mListView = FindViewById<ListView>(Resource.Id.orderListView);
             mListView.Clickable = true;
             addButton = FindViewById<Button>(Resource.Id.orderAdd);
             syncButton = FindViewById<Button>(Resource.Id.syncButton);
             
-            OrderAdapter adapter = new OrderAdapter(this, orders, this);
+            adapter = new OrderAdapter(this, orders, this);
             mListView.Adapter = adapter;
             
             if (mListView != null)
             {
                 mListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
                 {
-
                     var intent = new Intent(this, typeof(NewOrderActivity));
                     intent.PutExtra("Id", orders[e.Position].Id);
                     StartActivity(intent);
@@ -48,10 +48,9 @@ namespace DTG_Ordering_System
                     //Bundle args = new Bundle();
                     //args.PutInt("Index", orders[e.Position].Id);
                     //fragment.Show(this.FragmentManager, "Hello");
-
-
                 };
             }
+
             addButton.Click += delegate
             {
                 Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
@@ -63,7 +62,25 @@ namespace DTG_Ordering_System
                 dbr.syncDB();
 
                 Toast.MakeText(this, "Database reloaded from scratch!", ToastLength.Short).Show();
+
+                orders.Clear();
+                adapter.NotifyDataSetChanged();
             };
+        }
+
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            Console.WriteLine("1");
+
+            if (resultCode == Result.Ok)
+            {
+                Console.WriteLine("2");
+                var orderId = data.GetStringExtra("orderId");
+                orders.Add(dbr.getOrder(orderId));
+
+                adapter.NotifyDataSetChanged();
+            }
         }
 
         //public void myClickHandler(View v)
