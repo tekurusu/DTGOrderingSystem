@@ -61,10 +61,10 @@ namespace DTG_Ordering_System
             {
                 hasSent.Text = "Not Yet Sent";
             }
-            Button deleteButton = row.FindViewById<Button>(Resource.Id.deleteButton);
-            deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity, orders[position]));
-            Button editButton = row.FindViewById<Button>(Resource.Id.editButton);
-            editButton.SetOnClickListener(new EditButtonClickListener(activity, orders[position]));
+            //Button deleteButton = row.FindViewById<Button>(Resource.Id.deleteButton);
+            //deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity, orders[position]));
+            //Button editButton = row.FindViewById<Button>(Resource.Id.editButton);
+            //editButton.SetOnClickListener(new EditButtonClickListener(activity, orders[position]));
             //editButton.Click += (object sender, EventArgs e) => { Console.WriteLine("wew"); };
 
 

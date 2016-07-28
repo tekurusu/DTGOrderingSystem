@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Newtonsoft.Json;
 
 namespace DTG_Ordering_System
 {
@@ -41,13 +42,10 @@ namespace DTG_Ordering_System
             {
                 mListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
                 {
-                    var intent = new Intent(this, typeof(NewOrderActivity));
-                    intent.PutExtra("Id", orders[e.Position].Id);
+                    Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
+                    string json = JsonConvert.SerializeObject(orders[e.Position], new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                    intent.PutExtra("id", json);
                     StartActivity(intent);
-                    //OrderFragment fragment = new OrderFragment();
-                    //Bundle args = new Bundle();
-                    //args.PutInt("Index", orders[e.Position].Id);
-                    //fragment.Show(this.FragmentManager, "Hello");
                 };
             }
 
