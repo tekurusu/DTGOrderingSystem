@@ -59,7 +59,7 @@ namespace DTG_Ordering_System
 
         public override int GetChildrenCount(int groupPosition)
         {
-            return 1;
+            return headers[groupPosition].Items.Count;
         }
 
         public override View GetChildView(int groupPosition, int childPosition, bool isLastChild, View convertView, ViewGroup parent)
