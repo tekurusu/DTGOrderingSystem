@@ -134,7 +134,6 @@ namespace DTG_Ordering_System
 			}
 			
 		}
-
 		void SendButton_OnClick(object sender, EventArgs e)
 		{
 			if (items.Count == 0)
@@ -163,6 +162,25 @@ namespace DTG_Ordering_System
 				callDialog.Show();
 			}
 		}
+        void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
+        {
+            long listposition = mListView.GetExpandableListPosition(e.Position);
+            int childPosition = ExpandableListView.GetPackedPositionChild(listposition);
+            int groupPosition = ExpandableListView.GetPackedPositionGroup(listposition);
+
+            if (ExpandableListView.GetPackedPositionType(listposition) == PackedPositionType.Child)
+            {
+                var callDialog = new AlertDialog.Builder(this);
+                callDialog.SetMessage("Delete " + addedCategories[groupPosition].Items[childPosition].Name + "?");
+                callDialog.SetNeutralButton("Delete", delegate
+                {
+                    addedCategories[groupPosition].Items.RemoveAt(childPosition);
+                    adapter.NotifyDataSetChanged();
+                });
+                callDialog.SetNegativeButton("Cancel", delegate { });
+                callDialog.Show();
+            }
+        }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
@@ -177,20 +195,6 @@ namespace DTG_Ordering_System
                     changeIsComing = true;
                     var message = data.GetStringExtra("addedItems");
                     List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
-
-                    //foreach (Item i in addedItems)
-                    //{
-                    //    if (items.Exists(item => item.Id == i.Id) == true)
-                    //    {
-                    //        items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
-                    //    }
-
-                    //    else
-                    //    {
-                    //        items.Add(i);
-                    //    }
-                    //}
-
                     categoryName = addedItems[0].Category.Name;
                     ParentCategory pc = new ParentCategory(categoryName, addedItems);
                     if (addedCategories.Exists(category => category.Name == categoryName) == false) //check if the category is already in the list
@@ -221,19 +225,6 @@ namespace DTG_Ordering_System
                 }
             }			
         }
-
-		void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
-		{
-			var callDialog = new AlertDialog.Builder(this);
-			callDialog.SetMessage("Delete " + items[e.Position].Name + "?");
-			callDialog.SetNeutralButton("Delete", delegate
-			{
-				items.RemoveAt(e.Position);
-				adapter.NotifyDataSetChanged();
-			});
-			callDialog.SetNegativeButton("Cancel", delegate { });
-			callDialog.Show();
-		}
 
         public override void OnBackPressed()
         {
