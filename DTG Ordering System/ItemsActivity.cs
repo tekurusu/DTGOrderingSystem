@@ -16,6 +16,8 @@ namespace DTG_Ordering_System
         private static List<Item> items = new List<Item>();
         private static List<Item> addedItems = new List<Item>();
         private static List<Category> categories = new List<Category>();
+        private static Dictionary<string, int> quantities = new Dictionary<string, int>();
+        private static Dictionary<string, int> addedQuantities = new Dictionary<string, int>();
         private ListView mListView;
         private ItemAdapter adapter;
         private Button itemAdd;
@@ -33,12 +35,18 @@ namespace DTG_Ordering_System
             //clear lists if start of new activity.
 			items.Clear();
             addedItems.Clear();
+            quantities.Clear();
+            addedQuantities.Clear();
 
 			DBRepository dbr = new DBRepository();
-            dbr.clearQuantity(Intent.Extras.GetString("categoryId"));
+            //dbr.clearQuantity(Intent.Extras.GetString("categoryId")); //resets initial values for items to 0
             items = dbr.getAllItems(Intent.Extras.GetString("categoryId"));
+            foreach(Item i in items)
+            {
+                quantities.Add(i.Id, 0);
+            }
 
-            adapter = new ItemAdapter(this, items);
+            adapter = new ItemAdapter(this, items, quantities);
 
             //testing the adapter
             //Item indexerTest = adapter[1]; //Item at index 1
@@ -50,7 +58,7 @@ namespace DTG_Ordering_System
                 NumberPickerFragment picker = new NumberPickerFragment();
 
                 Bundle args = new Bundle();
-                args.PutInt("quantity", items[e.Position].Quantity);
+                args.PutInt("quantity", quantities[items[e.Position].Id]);
 				args.PutInt("position", e.Position);
                 args.PutString("itemName", items[e.Position].Name);
 
@@ -64,7 +72,10 @@ namespace DTG_Ordering_System
             {
                 Intent intent = new Intent();
                 string json = JsonConvert.SerializeObject(addedItems, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                string jsonQuantities = JsonConvert.SerializeObject(addedQuantities);
+                //Toast.MakeText(this, jsonQuantities, ToastLength.Long).Show();
                 intent.PutExtra("addedItems", json);
+                intent.PutExtra("addedQuantities", jsonQuantities);
                 SetResult(Result.Ok, intent);                
                 Finish();
             };
@@ -74,17 +85,22 @@ namespace DTG_Ordering_System
         {
 			DBRepository dbr = new DBRepository();
 
-			dbr.setQuantity(items[e.Position].Id, e.Quantity);
+            quantities[items[e.Position].Id] = e.Quantity;
+
             if (e.Quantity != 0)
             {
-                if (addedItems.Exists(x => x.Id == items[e.Position].Id) == false)
+                if (addedItems.Exists(x => x.Id == items[e.Position].Id) == false) //if item is not in addedItems
                 {
                     addedItems.Add(items[e.Position]);
+                    addedQuantities.Add(items[e.Position].Id, e.Quantity);
                     itemAdd.Enabled = true;
                 }            
-            } else if (addedItems.Exists(x => x.Id == items[e.Position].Id) == true)
+            }
+
+            else if (addedItems.Exists(x => x.Id == items[e.Position].Id) == true)
             {
                 addedItems.Remove(items[e.Position]);
+                addedQuantities.Remove(items[e.Position].Id);
 
             }
             

@@ -95,20 +95,7 @@ namespace DTG_Ordering_System
 			return categories;
 		}
 
-		public void setQuantity(string itemId, int quantity)
-		{ 
-			realm = Realm.GetInstance(config);
-
-			using (var transaction = realm.BeginWrite())
-			{
-				var someItem = realm.All<Item>().Where(i => i.Id == itemId).First();
-				someItem.Quantity = quantity;
-
-				transaction.Commit();
-			}
-		}
-
-        public void insertOrderedItems(List<Item> items, string orderId)
+        public void insertOrderedItems(List<Item> items, string orderId, Dictionary<string, int> quantities)
         {
             realm = Realm.GetInstance(config);
 
@@ -117,11 +104,10 @@ namespace DTG_Ordering_System
                 foreach (Item i in items)
                 {
                     var orderedItem = realm.CreateObject<OrderedItem>();
-                    orderedItem.Quantity = i.Quantity;
-                    //orderedItem.Item = getItem(i.Id);
-                    //orderedItem.Order = getOrder(orderId);
+
 					orderedItem.ItemId = i.Id;
 					orderedItem.OrderId = orderId;
+                    orderedItem.Quantity = quantities[i.Id];
 
                     getItem(i.Id).OrderedItems.Add(orderedItem);
                     getOrder(orderId).OrderedItems.Add(orderedItem);
@@ -131,7 +117,7 @@ namespace DTG_Ordering_System
             }
         }
 
-		public void updateOrderedItems(List<ParentCategory> items, string orderId)
+		public void updateOrderedItems(List<ParentCategory> items, string orderId, Dictionary<string, int> quantities)
 		{
 			realm = Realm.GetInstance(config);
 
@@ -146,7 +132,7 @@ namespace DTG_Ordering_System
 
 			foreach (ParentCategory pc in items)
 			{
-				insertOrderedItems(pc.Items, orderId);
+				insertOrderedItems(pc.Items, orderId, quantities);
 			}
 		}
 
@@ -751,22 +737,6 @@ namespace DTG_Ordering_System
             insertItem("o.10--band aid", "pcs", getCategory(others));
             insertItem("o.10--vaporub", "pc", getCategory(others));
             insertItem("o.21--Lason sa ipis", "pck", getCategory(others));
-        }
-
-        public void clearQuantity(string categoryId)
-        {
-            realm = Realm.GetInstance(config);
-
-            using (var transaction = realm.BeginWrite())
-            {
-                var cat = getCategory(categoryId).Items;
-                foreach (var c in cat)
-                {
-                    c.Quantity = 0;
-                }
-
-                transaction.Commit();
-            }    
         }
 	}
 }

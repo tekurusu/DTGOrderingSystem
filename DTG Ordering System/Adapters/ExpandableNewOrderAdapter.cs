@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Java.Lang;
+using Android.Graphics;
 
 namespace DTG_Ordering_System
 {
@@ -17,17 +18,15 @@ namespace DTG_Ordering_System
     {
 
         private Context context;
-        //private List<string> headers;
-        //private List<string> subItems;
         private List<ParentCategory> headers;
-        private List<Item> subItems;
+        private Dictionary<string, int> quantities;
 
 
-        public ExpandableNewOrderAdapter(Activity newContext, List<ParentCategory> headerList) : base()
+        public ExpandableNewOrderAdapter(Activity newContext, List<ParentCategory> headerList, Dictionary<string, int> newQuantities) : base()
         {
             context = newContext;
             headers = headerList;
-            //subItems = subItemList;
+            quantities = newQuantities;
         }
 
 
@@ -73,17 +72,14 @@ namespace DTG_Ordering_System
 
             //setup childview
             TextView itemName = row.FindViewById<TextView>(Resource.Id.itemName);
-            //itemName.Text = subItems[childPosition].Name;
             itemName.Text = headers[groupPosition].Items[childPosition].Name;
 
             TextView itemUnit = row.FindViewById<TextView>(Resource.Id.itemUnit);
-            //itemUnit.Text = subItems[childPosition].Unit;
             itemUnit.Text = headers[groupPosition].Items[childPosition].Unit;
 
 
             TextView itemQuantity = row.FindViewById<TextView>(Resource.Id.itemQuantity);
-            //itemQuantity.Text = subItems[childPosition].Quantity.ToString();
-            itemQuantity.Text = headers[groupPosition].Items[childPosition].Quantity.ToString();
+            itemQuantity.Text = quantities[headers[groupPosition].Items[childPosition].Id].ToString();
 
             return row;
         }
@@ -109,6 +105,7 @@ namespace DTG_Ordering_System
 
             //set header text
             TextView categoryHeader = row.FindViewById<TextView>(Resource.Id.lblListHeader);
+            categoryHeader.SetTextColor(Color.LightSeaGreen);
             categoryHeader.Text = headers[groupPosition].Name;
 
             return row;

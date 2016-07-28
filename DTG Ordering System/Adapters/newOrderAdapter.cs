@@ -17,11 +17,13 @@ namespace DTG_Ordering_System
     {
         private List<Item> items;
         private Context context;
+        private Dictionary<string, int> quantities;
 
-        public newOrderAdapter(Context context, List<Item> items)
+        public newOrderAdapter(Context context, List<Item> items, Dictionary<string, int> quantities)
         {
             this.context = context;
             this.items = items;
+            this.quantities = quantities;
         }
 
         public override int Count
@@ -56,7 +58,7 @@ namespace DTG_Ordering_System
             itemUnit.Text = items[position].Unit;
 
             TextView itemQuantity = row.FindViewById<TextView>(Resource.Id.itemQuantity);
-            itemQuantity.Text = items[position].Quantity.ToString();
+            itemQuantity.Text = quantities[items[position].Id].ToString();
 
             return row;
         }
