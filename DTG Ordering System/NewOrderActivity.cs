@@ -171,26 +171,31 @@ namespace DTG_Ordering_System
 
 		void SaveButton_OnClick(object sender, EventArgs e)
 		{
-            var callDialog = new AlertDialog.Builder(this);
-            callDialog.SetMessage("Are you sure you want to save this order as a draft?");
-            callDialog.SetNeutralButton("OK", delegate
-            {
-                DBRepository dbr = new DBRepository();
-                string orderId = dbr.insertOrder(deliveryDate.Text);
-                dbr.insertOrderedItems(items, orderId);
+			if (items.Count == 0)
+			{
+				Toast.MakeText(this, "There are no items to be saved.", ToastLength.Long).Show();
+			}
+			else
+			{
+				var callDialog = new AlertDialog.Builder(this);
+				callDialog.SetMessage("Are you sure you want to save this order as a draft?");
+				callDialog.SetNeutralButton("OK", delegate
+				{
+					DBRepository dbr = new DBRepository();
+					string orderId = dbr.insertOrder(deliveryDate.Text);
+					dbr.insertOrderedItems(items, orderId);
 
-                Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-                intent.PutExtra("OrderId", orderId);
-                //SetResult(Result.Ok, intent);
-                StartActivityForResult(intent, 1);
+					Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+					intent.PutExtra("OrderId", orderId);
+				//SetResult(Result.Ok, intent);
+				StartActivityForResult(intent, 1);
 
-				items.Clear();
-				adapter.NotifyDataSetChanged();
-            });
-            callDialog.SetNegativeButton("Cancel", delegate { });
-            callDialog.Show();
-
-			//Toast.MakeText(this, dbr.getAllOrderedItems(orderId), ToastLength.Long).Show();
+					items.Clear();
+					adapter.NotifyDataSetChanged();
+				});
+				callDialog.SetNegativeButton("Cancel", delegate { });
+				callDialog.Show();	
+			}
 		}
 
 		void SendButton_OnClick(object sender, EventArgs e)
