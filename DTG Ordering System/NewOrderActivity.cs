@@ -48,23 +48,7 @@ namespace DTG_Ordering_System
             DateTime now = DateTime.Now.ToLocalTime();
             dateHolder = now;
             String dateNow = String.Format("{0:dd MMM yy}", now);
-            deliveryDate.Text = dateNow;
-            editDate.Click += (object sender, EventArgs e) =>
-            {
-                DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
-                {
-                    //deliveryDate.Text = time.ToLongDateString();
-                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
-                    dateHolder = time;
-                });
-                Bundle args = new Bundle();
-                args.PutInt("year", dateHolder.Year);
-                args.PutInt("month", dateHolder.Month);
-                args.PutInt("day", dateHolder.Day);
-
-                frag.Arguments = args;
-                frag.Show(FragmentManager, DatePickerFragment.TAG);
-            };
+            deliveryDate.Text = dateNow;            
 
             items.Clear();
             adapter = new ExpandableNewOrderAdapter(this, addedCategories);
@@ -85,6 +69,7 @@ namespace DTG_Ordering_System
                 Order order = dbr.getOrder(Intent.GetStringExtra("orderId"));
                 List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
 
+                dateHolder = DateTime.Parse(order.DeliveryDate);
                 deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
                 foreach (OrderedItem oi in orderedItems)
                 {
@@ -93,6 +78,21 @@ namespace DTG_Ordering_System
 
                 adapter.NotifyDataSetChanged();
             }
+
+            editDate.Click += (object sender, EventArgs e) =>
+            {
+                DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
+                {
+                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                });
+                Bundle args = new Bundle();
+                args.PutInt("year", dateHolder.Year);
+                args.PutInt("month", dateHolder.Month);
+                args.PutInt("day", dateHolder.Day);
+
+                frag.Arguments = args;
+                frag.Show(FragmentManager, DatePickerFragment.TAG);
+            };
         }
 
 		void SaveButton_OnClick(object sender, EventArgs e)
