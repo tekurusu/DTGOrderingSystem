@@ -18,8 +18,9 @@ namespace DTG_Ordering_System
     {
         private static List<Item> items = new List<Item>();
         private static List<OrderedItem> orderedItems = new List<OrderedItem>();
-        private ListView mListView;
-        private newOrderAdapter adapter;
+        private static List<ParentCategory> addedCategories = new List<ParentCategory>();
+        private ExpandableListView mListView;
+        private ExpandableNewOrderAdapter adapter;
 		private TextView deliveryDate;
         private Button addItemsButton;
 		private Button saveButton;
@@ -35,7 +36,7 @@ namespace DTG_Ordering_System
 
             SetContentView(Resource.Layout.newOrder);
 
-            mListView = FindViewById<ListView>(Resource.Id.selectedItemsListView);
+            mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
             addItemsButton = FindViewById<Button>(Resource.Id.addItems);
             saveButton = FindViewById<Button>(Resource.Id.saveButton);
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
@@ -47,27 +48,12 @@ namespace DTG_Ordering_System
             DateTime now = DateTime.Now.ToLocalTime();
             dateHolder = now;
             String dateNow = String.Format("{0:dd MMM yy}", now);
-            deliveryDate.Text = dateNow;
-            editDate.Click += (object sender, EventArgs e) =>
-            {
-                DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
-                {
-                    //deliveryDate.Text = time.ToLongDateString();
-                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
-                    dateHolder = time;
-                });
-                Bundle args = new Bundle();
-                args.PutInt("year", dateHolder.Year);
-                args.PutInt("month", dateHolder.Month);
-                args.PutInt("day", dateHolder.Day);
+            deliveryDate.Text = dateNow;            
 
-                frag.Arguments = args;
-                frag.Show(FragmentManager, DatePickerFragment.TAG);
-            };
-
+            addedCategories.Clear();
             items.Clear();
-            adapter = new newOrderAdapter(this, items);
-            mListView.Adapter = adapter;
+            adapter = new ExpandableNewOrderAdapter(this, addedCategories);
+            mListView.SetAdapter(adapter);
 
             addItemsButton.Click += (object sender, EventArgs e) =>
             {
@@ -84,16 +70,47 @@ namespace DTG_Ordering_System
                 Order order = dbr.getOrder(Intent.GetStringExtra("orderId"));
                 List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
 
+                dateHolder = DateTime.Parse(order.DeliveryDate);
                 deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
+                sendButton.Enabled = true;
+
                 foreach (OrderedItem oi in orderedItems)
                 {
-					DBRepository dbr = new DBRepository();
+					dbr = new DBRepository();
 
 					items.Add(dbr.getItem(oi.ItemId));
                 }
 
+                var temp = items.GroupBy(x => x.Category.Id);
+                foreach(var e in temp)
+                {
+                    List<Item> manyak = new List<Item>();
+                    foreach (Item i in e)
+                    {
+                        manyak.Add(i);
+                    }
+                    addedCategories.Add(new ParentCategory(e.First().Category.Name, manyak));
+                }               
+
                 adapter.NotifyDataSetChanged();
             }
+
+            editDate.Click += (object sender, EventArgs e) =>
+            {
+                DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
+                {
+                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                    changeIsComing = true;
+                    if (items.Count != 0) saveButton.Enabled = true;
+                });
+                Bundle args = new Bundle();
+                args.PutInt("year", dateHolder.Year);
+                args.PutInt("month", dateHolder.Month);
+                args.PutInt("day", dateHolder.Day);
+
+                frag.Arguments = args;
+                frag.Show(FragmentManager, DatePickerFragment.TAG);
+            };
         }
 
 		void SaveButton_OnClick(object sender, EventArgs e)
@@ -108,7 +125,7 @@ namespace DTG_Ordering_System
 				callDialog.SetMessage("Are you sure you want to save this order as a draft?");
 				callDialog.SetNeutralButton("OK", delegate
 				{
-					DBRepository dbr = new DBRepository();
+					dbr = new DBRepository();
                     string orderId;
 
                     if (Intent.GetStringExtra("orderId") == null)
@@ -120,7 +137,8 @@ namespace DTG_Ordering_System
                     {
                         orderId = Intent.GetStringExtra("orderId");
                         dbr.updateOrder(orderId, deliveryDate.Text);
-                        dbr.updateOrderedItems(items, orderId);
+						dbr.updateOrderedItems(addedCategories, orderId);
+
                     }
 
                     Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
@@ -135,7 +153,6 @@ namespace DTG_Ordering_System
 			}
 			
 		}
-
 		void SendButton_OnClick(object sender, EventArgs e)
 		{
 			if (items.Count == 0)
@@ -148,7 +165,7 @@ namespace DTG_Ordering_System
 				callDialog.SetMessage("Are you sure you want to send this order?");
 				callDialog.SetNeutralButton("OK", delegate
 				{
-					DBRepository dbr = new DBRepository();
+					dbr = new DBRepository();
 					string orderId = dbr.insertOrder(deliveryDate.Text);
 					dbr.insertOrderedItems(items, orderId);
 					dbr.sendOrder(orderId);
@@ -165,67 +182,132 @@ namespace DTG_Ordering_System
 			}
 		}
 
+        void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
+        {
+            long listposition = mListView.GetExpandableListPosition(e.Position);
+            int childPosition = ExpandableListView.GetPackedPositionChild(listposition);
+            int groupPosition = ExpandableListView.GetPackedPositionGroup(listposition);
+
+            if (ExpandableListView.GetPackedPositionType(listposition) == PackedPositionType.Child)
+            {
+                var callDialog = new AlertDialog.Builder(this);
+                callDialog.SetMessage("Delete " + addedCategories[groupPosition].Items[childPosition].Name + "?");
+                callDialog.SetNeutralButton("Delete", delegate
+                {
+					if (Intent.GetStringExtra("orderId") != null)
+					{
+						addedCategories[groupPosition].Items.RemoveAt(childPosition);
+						adapter.NotifyDataSetChanged();
+					}
+					else
+					{
+						Item searchedItem = items.Find(x => x.Id == addedCategories[groupPosition].Items[childPosition].Id);
+						items.Remove(searchedItem);
+						addedCategories[groupPosition].Items.RemoveAt(childPosition);
+						adapter.NotifyDataSetChanged();
+					}
+
+					changeIsComing = true;
+
+					if (addedCategories[groupPosition].Items.Count != 0)
+					{
+						saveButton.Enabled = true;
+						adapter.NotifyDataSetChanged();
+					}
+					else
+					{
+						saveButton.Enabled = false;
+						adapter.NotifyDataSetChanged();
+					}
+
+				});
+                callDialog.SetNegativeButton("Cancel", delegate { });
+                callDialog.Show();
+            }
+        }
+
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
+
+            string categoryName;
 
             if (resultCode == Result.Ok)
             {
                 if (data != null)
                 {
-                    changeIsComing = true;
+                    saveButton.Enabled = true;
+                    sendButton.Enabled = true;
                     var message = data.GetStringExtra("addedItems");
 
-
-					List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
-
-                    foreach (Item i in addedItems)
+                    List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
+                    categoryName = addedItems[0].Category.Name;
+                    ParentCategory pc = new ParentCategory(categoryName, addedItems);
+                    if (addedCategories.Exists(category => category.Name == categoryName) == false) //check if the category is already in the list
                     {
-                        if (items.Exists(item => item.Id == i.Id) == true)
-                        {
-                            items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
-                        }
-
-                        else
+                        addedCategories.Add(pc);
+                        foreach(Item i in pc.Items)
                         {
                             items.Add(i);
                         }
                     }
 
+                    else    //if category already exists..update all the item quantities
+                    {
+                        ParentCategory tempCategory = addedCategories.Find(category => category.Name == pc.Name);
+
+                        foreach (Item i in pc.Items)
+                        {
+                            //if item exists, update quantity. else add item to category.items
+                            if (tempCategory.Items.ToList().Exists(item => item.Id == i.Id) == true)
+                            {
+                                tempCategory.Items.ToList().Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                                //items.Find(item => item.Id == i.Id).Quantity += i.Quantity;                                
+                            }
+
+                            else
+                            {
+                                tempCategory.Items.Add(i);
+                                items.Add(i);
+                            }
+                        }
+                    }
+
                     adapter.NotifyDataSetChanged();
+                    changeIsComing = true;
                 }
             }			
         }
 
-		void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
-		{
-			var callDialog = new AlertDialog.Builder(this);
-			callDialog.SetMessage("Delete " + items[e.Position].Name + "?");
-			callDialog.SetNeutralButton("Delete", delegate
-			{
-				if (Intent.GetStringExtra("orderId") != null)
-				{
-					DBRepository dbr = new DBRepository();
-					dbr.deleteOrderedItem(Intent.GetStringExtra("orderId"), items[e.Position].Id);
-					items.RemoveAt(e.Position);
-					adapter.NotifyDataSetChanged();
-				}
-				else
-				{
-					items.RemoveAt(e.Position);
-					adapter.NotifyDataSetChanged();
-				}
-			});
-			callDialog.SetNegativeButton("Cancel", delegate { });
-			callDialog.Show();
-		}
+		//void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
+		//{
+		//	var callDialog = new AlertDialog.Builder(this);
+		//	callDialog.SetMessage("Delete " + items[e.Position].Name + "?");
+		//	callDialog.SetNeutralButton("Delete", delegate
+		//	{
+		//		if (Intent.GetStringExtra("orderId") != null)
+		//		{
+		//			DBRepository dbr = new DBRepository();
+		//			dbr.deleteOrderedItem(Intent.GetStringExtra("orderId"), items[e.Position].Id);
+		//			items.RemoveAt(e.Position);
+		//			adapter.NotifyDataSetChanged();
+		//		}
+		//		else
+		//		{
+					//items.RemoveAt(e.Position);
+					//adapter.NotifyDataSetChanged();
+		//		}
+		//	});
+		//	callDialog.SetNegativeButton("Cancel", delegate { });
+		//	callDialog.Show();
+		//}
 
         public override void OnBackPressed()
         {
             if (changeIsComing)
             {
                 var callDialog = new AlertDialog.Builder(this);
-                callDialog.SetMessage("Order has been modified, discard changes?");
+                callDialog.SetMessage("Discard changes for this order?");
                 callDialog.SetNeutralButton("Yes", delegate
                 {
                     base.OnBackPressed();

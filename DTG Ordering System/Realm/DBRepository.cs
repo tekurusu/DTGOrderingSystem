@@ -131,7 +131,7 @@ namespace DTG_Ordering_System
             }
         }
 
-        public void updateOrderedItems(List<Item> items, string orderId)
+		public void updateOrderedItems(List<ParentCategory> items, string orderId)
 		{
 			realm = Realm.GetInstance(config);
 
@@ -142,7 +142,12 @@ namespace DTG_Ordering_System
 				transaction.Commit();
 			}
 
-			insertOrderedItems(items, orderId);
+			deleteAllOrderedItems(orderId);
+
+			foreach (ParentCategory pc in items)
+			{
+				insertOrderedItems(pc.Items, orderId);
+			}
 		}
 
 		public void updateOrder(string orderId, string deliveryDate)
@@ -225,12 +230,39 @@ namespace DTG_Ordering_System
 		{
 			realm = Realm.GetInstance(config);
 
-			var someOrderedItem = realm.All<OrderedItem>().Where(oi => oi.OrderId == orderId && oi.ItemId == itemId).First();
-
-			using (var transaction = realm.BeginWrite())
+			try
 			{
-				realm.Remove(someOrderedItem);
-				transaction.Commit();
+				var someOrderedItem = realm.All<OrderedItem>().Where(oi => oi.OrderId == orderId && oi.ItemId == itemId).First();
+
+				using (var transaction = realm.BeginWrite())
+				{
+					realm.Remove(someOrderedItem);
+					transaction.Commit();
+				}
+			}
+			catch
+			{
+			}
+		}
+
+		public void deleteAllOrderedItems(string orderId)
+		{
+			realm = Realm.GetInstance(config);
+			try
+			{
+				var orderedItemsInAnOrder = realm.All<OrderedItem>().Where(oi => oi.OrderId == orderId);
+
+				using (var transaction = realm.BeginWrite())
+				{
+					foreach (OrderedItem oi in orderedItemsInAnOrder)
+					{
+						realm.Remove(oi);
+					}
+					transaction.Commit();
+				}
+			}
+			catch
+			{
 			}
 		}
 

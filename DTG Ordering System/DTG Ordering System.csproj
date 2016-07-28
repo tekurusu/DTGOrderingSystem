@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\ExpandableNewOrderAdapter.cs" />
     <Compile Include="Adapters\newOrderAdapter.cs" />
     <Compile Include="Adapters\orderAdapter.cs" />
     <Compile Include="CategoriesActivity.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Realm\DBRepository.cs" />
     <Compile Include="Realm\Order.cs" />
     <Compile Include="Realm\OrderedItem.cs" />
+    <Compile Include="Realm\ParentCategory.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -112,6 +114,9 @@
     </AndroidResource>
     <None Include="FodyWeavers.xml" />
     <None Include="packages.config" />
+    <AndroidResource Include="Resources\layout\newOrderListGroup.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\itemList.axml">
