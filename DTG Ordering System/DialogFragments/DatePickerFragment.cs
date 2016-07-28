@@ -44,7 +44,7 @@ namespace DTG_Ordering_System
             DateTime selectedDate = new DateTime(year, monthOfYear + 1, dayOfMonth);
 			//Log.Debug(TAG, selectedDate.ToLongDateString());
 
-			if (selectedDate.Day < DateTime.Now.Day)
+			if ((selectedDate.Day < DateTime.Now.Day) && (selectedDate.Month < DateTime.Now.Month) && (selectedDate.Year < DateTime.Now.Year))
 			{
 				Toast.MakeText(this.Activity, "Date is invalid!", ToastLength.Long).Show();
 			}

@@ -166,34 +166,6 @@ namespace DTG_Ordering_System
 			return Realm.GetInstance(config).All<Order>().Where(o => o.Id == orderId).First();
 		}
 
-		//public List<OrderedItem> getAllOrdersItems(string orderId)
-		//{
-		//	List<OrderedItem> orderedItems = new List<OrderedItem>();
-		//	var o = getOrder(orderId).OrderedItems;
-
-		//	foreach (var oI in o)
-		//	{
-		//		orderedItems.Add(oI);
-		//	}
-
-		//	return orderedItems;
-		//}
-
-		//public string getAllOrderedItems(string orderId)
-		//{
-		//	var o = getOrder(orderId).OrderedItems;
-		//	string orderedItems = "";
-		//	orderedItems += "Retrieving Ordered Items from Order";
-
-		//	foreach (var oI in o)
-		//	{
-		//		orderedItems += String.Format("\n {0} | {1}", oI.Item.Name, oI.Item.Quantity);
-		//	}
-
-		//	return orderedItems;
-		//}
-
-
         public List<OrderedItem> getAllOrderedItems(string orderId)
         {
             List<OrderedItem> orderedItems = new List<OrderedItem>();
@@ -204,21 +176,6 @@ namespace DTG_Ordering_System
             }
             return orderedItems;
         }
-
-        //public string getAllOrders()
-        //{
-        //	realm = Realm.GetInstance(config);
-
-        //	var allOrders = realm.All<Order>();
-        //	string orders = "";
-        //	orders += "Retrieving All Orders";
-
-        //	foreach (var o in allOrders)
-        //	{
-        //		orders += String.Format("\n {0}", o.Id);
-        //	}
-        //	return orders;
-        //}
 
         public List<Order> getAllOrders()
         {
@@ -234,6 +191,18 @@ namespace DTG_Ordering_System
             }
             return orders;
         }
+
+		public void deleteOrder(string orderId)
+		{
+			realm = Realm.GetInstance(config);
+
+			using (var transaction = realm.BeginWrite())
+			{
+				var someOrder = realm.All<Order>().Where(o => o.Id == orderId).First();
+				realm.Remove(someOrder);
+				transaction.Commit();
+			}
+		}
 
         public void deleteDB()
         {

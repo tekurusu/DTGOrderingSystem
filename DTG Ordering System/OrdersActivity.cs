@@ -49,7 +49,9 @@ namespace DTG_Ordering_System
                 };
             }
 
-            addButton.Click += delegate
+			mListView.ItemLongClick += DeleteOrder_OnLongClick;
+
+			addButton.Click += delegate
             {
                 Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
                 StartActivity(intent);
@@ -80,6 +82,19 @@ namespace DTG_Ordering_System
                 adapter.NotifyDataSetChanged();
             }
         }
+
+		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
+		{
+			var callDialog = new AlertDialog.Builder(this);
+			callDialog.SetMessage("Delete " + orders[e.Position].DeliveryDate + "?");
+			callDialog.SetNeutralButton("Delete", delegate
+			{
+				orders.RemoveAt(e.Position);
+				adapter.NotifyDataSetChanged();
+			});
+			callDialog.SetNegativeButton("Cancel", delegate { });
+			callDialog.Show();
+		}
 
         //public void myClickHandler(View v)
         //{

@@ -50,44 +50,19 @@ namespace DTG_Ordering_System
                 orderedItems = dbr.getAllOrderedItems(order.Id);
                 foreach (OrderedItem oi in orderedItems)
                 {
-                    //if (items.Exists(item => item.Id == oi.Item.Id) == true)
-                    //{
-                    //    items.Find(item => item.Id == oi.Item.Id).Quantity += oi.Item.Quantity;
-                    //}
-                    //else
-                        items.Add(oi.Item);
-                    //}
+                	items.Add(oi.Item);
                 }
-                //var message = data.GetStringExtra("addedItems");
-
-
-                //foreach (Item i in addedItems)
-                //{
-                //    if (items.Exists(item => item.Id == i.Id) == true)
-                //    {
-                //        items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
-                //    }
-
-                //    else
-                //    {
-                //        items.Add(i);
-                //    }
-                //}
-
-                //adapter.NotifyDataSetChanged();
-
 
                 //code for datepicker
-                //DateTime now = DateTime.ParseExact(order.DeliveryDate, "0:dd MMM yy", System.Globalization.CultureInfo.InvariantCulture);
-                //dateHolder = now;
-                String dateNow = String.Format("{0:dd MMM yy}", order.DeliveryDate);
+				DateTime now = DateTime.Parse(order.DeliveryDate);
+                dateHolder = now;
+				String dateNow = String.Format("{0:dd MMM yy}", now);
                 deliveryDate.Text = dateNow;
                 editDate.Click += (object sender, EventArgs e) =>
                 {
                     DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
                     {
-                    //deliveryDate.Text = time.ToLongDateString();
-                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                    	deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
                         dateHolder = time;
                     });
                     Bundle args = new Bundle();
