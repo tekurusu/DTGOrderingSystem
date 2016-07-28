@@ -19,6 +19,7 @@ namespace DTG_Ordering_System
         private static List<Item> items = new List<Item>();
         private static List<OrderedItem> orderedItems = new List<OrderedItem>();
         private static List<ParentCategory> addedCategories = new List<ParentCategory>();
+        private static Dictionary<string, int> addedQuantities = new Dictionary<string, int>();
         private ExpandableListView mListView;
         private ExpandableNewOrderAdapter adapter;
 		private TextView deliveryDate;
@@ -52,7 +53,8 @@ namespace DTG_Ordering_System
 
             addedCategories.Clear();
             items.Clear();
-            adapter = new ExpandableNewOrderAdapter(this, addedCategories);
+            addedQuantities.Clear();
+            adapter = new ExpandableNewOrderAdapter(this, addedCategories, addedQuantities);
             mListView.SetAdapter(adapter);
 
             addItemsButton.Click += (object sender, EventArgs e) =>
@@ -67,6 +69,8 @@ namespace DTG_Ordering_System
 
             if (Intent.GetStringExtra("orderId") != null)
             {
+                //***FOR EDIT****//
+                
                 Order order = dbr.getOrder(Intent.GetStringExtra("orderId"));
                 List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
 
@@ -74,21 +78,23 @@ namespace DTG_Ordering_System
                 deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
                 sendButton.Enabled = true;
 
+                //Toast.MakeText(this, addedQuantities.Count.ToString(), ToastLength.Long).Show();
                 foreach (OrderedItem oi in orderedItems)
                 {
                     items.Add(oi.Item);
+                    addedQuantities.Add(oi.Item.Id, oi.Quantity);
                 }
 
                 var temp = items.GroupBy(x => x.Category.Id);
-                foreach(var e in temp)
+                foreach (var e in temp)
                 {
-                    List<Item> manyak = new List<Item>();
+                    List<Item> listHolder = new List<Item>();
                     foreach (Item i in e)
                     {
-                        manyak.Add(i);
+                        listHolder.Add(i);
                     }
-                    addedCategories.Add(new ParentCategory(e.First().Category.Name, manyak));
-                }               
+                    addedCategories.Add(new ParentCategory(e.First().Category.Name, listHolder));
+                }
 
                 adapter.NotifyDataSetChanged();
             }
@@ -98,8 +104,12 @@ namespace DTG_Ordering_System
                 DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
                 {
                     deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
-                    changeIsComing = true;
-                    if (items.Count != 0) saveButton.Enabled = true;
+                    if (items.Count != 0)
+                    {
+                        saveButton.Enabled = true;
+                        changeIsComing = true;
+
+                    }
                 });
                 Bundle args = new Bundle();
                 args.PutInt("year", dateHolder.Year);
@@ -113,71 +123,56 @@ namespace DTG_Ordering_System
 
 		void SaveButton_OnClick(object sender, EventArgs e)
 		{
-			if (items.Count == 0)
+			var callDialog = new AlertDialog.Builder(this);
+			callDialog.SetMessage("Are you sure you want to save this order as a draft?");
+			callDialog.SetNeutralButton("OK", delegate
 			{
-				Toast.MakeText(this, "There are no items to be saved.", ToastLength.Long).Show();
-			}
-			else
-			{
-				var callDialog = new AlertDialog.Builder(this);
-				callDialog.SetMessage("Are you sure you want to save this order as a draft?");
-				callDialog.SetNeutralButton("OK", delegate
-				{
-					DBRepository dbr = new DBRepository();
-                    string orderId;
+				DBRepository dbr = new DBRepository();
+                string orderId;
 
-                    if (Intent.GetStringExtra("orderId") == null)
-                    {
-                        orderId = dbr.insertOrder(deliveryDate.Text);
-                        dbr.insertOrderedItems(items, orderId);
-                    }
-                    else
-                    {
-                        orderId = Intent.GetStringExtra("orderId");
-                        dbr.updateOrder(orderId, deliveryDate.Text);
-                        dbr.updateOrderedItems(items, orderId);
-                    }
+                if (Intent.GetStringExtra("orderId") == null)
+                {
+                    orderId = dbr.insertOrder(deliveryDate.Text);
+                    dbr.insertOrderedItems(items, orderId, addedQuantities);
+                }
+                else
+                {
+                    orderId = Intent.GetStringExtra("orderId");
+                    dbr.updateOrder(orderId, deliveryDate.Text);
+                    dbr.updateOrderedItems(items, orderId);
+                }
 
-                    Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-					intent.PutExtra("OrderId", orderId);
-					StartActivityForResult(intent, 1);
+                Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+				intent.PutExtra("OrderId", orderId);
+				StartActivityForResult(intent, 1);
 
-					items.Clear();
-					adapter.NotifyDataSetChanged();
-				});
-				callDialog.SetNegativeButton("Cancel", delegate { });
-				callDialog.Show();
-			}
-			
+				items.Clear();
+				adapter.NotifyDataSetChanged();
+			});
+			callDialog.SetNegativeButton("Cancel", delegate { });
+			callDialog.Show();
 		}
 
 		void SendButton_OnClick(object sender, EventArgs e)
 		{
-			if (items.Count == 0)
+			var callDialog = new AlertDialog.Builder(this);
+			callDialog.SetMessage("Are you sure you want to send this order?");
+			callDialog.SetNeutralButton("OK", delegate
 			{
-				Toast.MakeText(this, "There are no items to be sent.", ToastLength.Long).Show();
-			}
-			else
-			{
-				var callDialog = new AlertDialog.Builder(this);
-				callDialog.SetMessage("Are you sure you want to send this order?");
-				callDialog.SetNeutralButton("OK", delegate
-				{
-					DBRepository dbr = new DBRepository();
-					string orderId = dbr.insertOrder(deliveryDate.Text);
-					dbr.insertOrderedItems(items, orderId);
-					dbr.sendOrder(orderId);
+				DBRepository dbr = new DBRepository();
+				string orderId = dbr.insertOrder(deliveryDate.Text);
+				dbr.insertOrderedItems(items, orderId, addedQuantities);
+				dbr.sendOrder(orderId);
 
-					Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-					intent.PutExtra("OrderId", orderId);
-                    StartActivityForResult(intent, 1);
+				Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+				intent.PutExtra("OrderId", orderId);
+                StartActivityForResult(intent, 1);
 
-					items.Clear();
-					adapter.NotifyDataSetChanged();
-				});
-				callDialog.SetNegativeButton("Cancel", delegate { });
-				callDialog.Show();
-			}
+				items.Clear();
+				adapter.NotifyDataSetChanged();
+			});
+			callDialog.SetNegativeButton("Cancel", delegate { });
+			callDialog.Show();
 		}
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
@@ -193,14 +188,31 @@ namespace DTG_Ordering_System
                     saveButton.Enabled = true;
                     sendButton.Enabled = true;
                     var message = data.GetStringExtra("addedItems");
+                    var messageQuantity = data.GetStringExtra("addedQuantities");
+                    //Toast.MakeText(this, messageQuantity.ToString(), ToastLength.Long).Show();
+
                     List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
+                    Dictionary<string, int> tempQuantities = JsonConvert.DeserializeObject<Dictionary<string, int>>(messageQuantity);
+
+                    foreach(KeyValuePair<string, int> x in tempQuantities)
+                    {
+                        if (addedQuantities.ContainsKey(x.Key) == true)
+                        {
+                            addedQuantities[x.Key] += tempQuantities[x.Key];
+                        }
+                        else
+                        {
+                            addedQuantities.Add(x.Key, x.Value);
+                        }
+                    }
 
                     categoryName = addedItems[0].Category.Name;
                     ParentCategory pc = new ParentCategory(categoryName, addedItems);
                     if (addedCategories.Exists(category => category.Name == categoryName) == false) //check if the category is already in the list
                     {
                         addedCategories.Add(pc);
-                        foreach(Item i in pc.Items)
+
+                        foreach(Item i in addedItems) //for items..
                         {
                             items.Add(i);
                         }
@@ -213,16 +225,12 @@ namespace DTG_Ordering_System
                         foreach (Item i in pc.Items)
                         {
                             //if item exists, update quantity. else add item to category.items
-                            if (tempCategory.Items.ToList().Exists(item => item.Id == i.Id) == true)
+                            if (tempCategory.Items.ToList().Exists(item => item.Id == i.Id) == false)
                             {
-                                tempCategory.Items.ToList().Find(item => item.Id == i.Id).Quantity += i.Quantity;
-                                //items.Find(item => item.Id == i.Id).Quantity += i.Quantity;                                
-                            }
-
-                            else
-                            {
+                                //tempCategory.Items.ToList().Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                                //items.Find(item => item.Id == i.Id).Quantity += i.Quantity;           
                                 tempCategory.Items.Add(i);
-                                items.Add(i);
+                                //items.Add(i);
                             }
                         }
                     }
