@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Newtonsoft.Json;
 
 namespace DTG_Ordering_System
 {
@@ -61,9 +62,9 @@ namespace DTG_Ordering_System
                 hasSent.Text = "Not Yet Sent";
             }
             Button deleteButton = row.FindViewById<Button>(Resource.Id.deleteButton);
-            deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity));
+            deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity, orders[position]));
             Button editButton = row.FindViewById<Button>(Resource.Id.editButton);
-            editButton.SetOnClickListener(new EditButtonClickListener(activity, orders[position].Id));
+            editButton.SetOnClickListener(new EditButtonClickListener(activity, orders[position]));
             //editButton.Click += (object sender, EventArgs e) => { Console.WriteLine("wew"); };
 
 
@@ -74,11 +75,11 @@ namespace DTG_Ordering_System
         private class EditButtonClickListener : Java.Lang.Object, View.IOnClickListener
         {
             private Activity activity;
-            private string orderid;
-            public EditButtonClickListener(Activity activity, string orderId)
+            private Order order;
+            public EditButtonClickListener(Activity activity, Order order)
             {
                 this.activity = activity;
-                orderid = orderId;
+                this.order = order;
             }
 
             public void OnClick(View v)
@@ -86,27 +87,29 @@ namespace DTG_Ordering_System
                 //string name = (string)v.Tag;
                 //string text = string.Format("{0} Button Click.", name);
                 //Toast.MakeText(this.activity, text, ToastLength.Short).Show();
-                Toast.MakeText(this.activity, orderid, ToastLength.Short).Show();
-                //Intent intent = new Intent(activity.ApplicationContext, typeof(CategoriesActivity));
-                //intent.PutExtra("id", orderid);
-                //activity.StartActivity(intent);
+                //Toast.MakeText(this.activity, order, ToastLength.Short).Show();
+                Intent intent = new Intent(activity.ApplicationContext, typeof(NewOrderActivity));
+                string json = JsonConvert.SerializeObject(order, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                intent.PutExtra("id", json);
+                activity.StartActivity(intent);
             }
         }
 
         private class DeleteButtonClickListener : Java.Lang.Object, View.IOnClickListener
         {
             private Activity activity;
-
-            public DeleteButtonClickListener(Activity activity)
+            Order order = new Order();
+            public DeleteButtonClickListener(Activity activity, Order order)
             {
                 this.activity = activity;
+                this.order = order;
             }
 
             public void OnClick(View v)
             {
                 //string name = (string)v.Tag;
                 //string text = string.Format("{0} Button Click.", name);
-                //Toast.MakeText(this.activity, text, ToastLength.Short).Show();
+                Toast.MakeText(this.activity, order.Id, ToastLength.Short).Show();
                 Console.WriteLine("grabe");
             }
         }

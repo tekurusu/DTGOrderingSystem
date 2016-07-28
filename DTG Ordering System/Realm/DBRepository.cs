@@ -179,34 +179,46 @@ namespace DTG_Ordering_System
 		//	return orderedItems;
 		//}
 
-		public string getAllOrderedItems(string orderId)
-		{
-			var o = getOrder(orderId).OrderedItems;
-			string orderedItems = "";
-			orderedItems += "Retrieving Ordered Items from Order";
-
-			foreach (var oI in o)
-			{
-				orderedItems += String.Format("\n {0} | {1}", oI.Item.Name, oI.Item.Quantity);
-			}
-
-			return orderedItems;
-		}
-
-		//public string getAllOrders()
+		//public string getAllOrderedItems(string orderId)
 		//{
-		//	realm = Realm.GetInstance(config);
+		//	var o = getOrder(orderId).OrderedItems;
+		//	string orderedItems = "";
+		//	orderedItems += "Retrieving Ordered Items from Order";
 
-		//	var allOrders = realm.All<Order>();
-		//	string orders = "";
-		//	orders += "Retrieving All Orders";
-
-		//	foreach (var o in allOrders)
+		//	foreach (var oI in o)
 		//	{
-		//		orders += String.Format("\n {0}", o.Id);
+		//		orderedItems += String.Format("\n {0} | {1}", oI.Item.Name, oI.Item.Quantity);
 		//	}
-		//	return orders;
+
+		//	return orderedItems;
 		//}
+
+
+        public List<OrderedItem> getAllOrderedItems(string orderId)
+        {
+            List<OrderedItem> orderedItems = new List<OrderedItem>();
+            var o = getOrder(orderId).OrderedItems;
+            foreach (var oi in o)
+            {
+                orderedItems.Add(oi);
+            }
+            return orderedItems;
+        }
+
+        //public string getAllOrders()
+        //{
+        //	realm = Realm.GetInstance(config);
+
+        //	var allOrders = realm.All<Order>();
+        //	string orders = "";
+        //	orders += "Retrieving All Orders";
+
+        //	foreach (var o in allOrders)
+        //	{
+        //		orders += String.Format("\n {0}", o.Id);
+        //	}
+        //	return orders;
+        //}
 
         public List<Order> getAllOrders()
         {
