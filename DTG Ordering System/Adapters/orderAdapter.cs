@@ -61,57 +61,8 @@ namespace DTG_Ordering_System
             {
                 hasSent.Text = "Not Yet Sent";
             }
-            //Button deleteButton = row.FindViewById<Button>(Resource.Id.deleteButton);
-            //deleteButton.SetOnClickListener(new DeleteButtonClickListener(activity, orders[position]));
-            //Button editButton = row.FindViewById<Button>(Resource.Id.editButton);
-            //editButton.SetOnClickListener(new EditButtonClickListener(activity, orders[position]));
-            //editButton.Click += (object sender, EventArgs e) => { Console.WriteLine("wew"); };
-
-
-
-
+            
             return row;
-        }
-        private class EditButtonClickListener : Java.Lang.Object, View.IOnClickListener
-        {
-            private Activity activity;
-            private Order order;
-            public EditButtonClickListener(Activity activity, Order order)
-            {
-                this.activity = activity;
-                this.order = order;
-            }
-
-            public void OnClick(View v)
-            {
-                //string name = (string)v.Tag;
-                //string text = string.Format("{0} Button Click.", name);
-                //Toast.MakeText(this.activity, text, ToastLength.Short).Show();
-                //Toast.MakeText(this.activity, order, ToastLength.Short).Show();
-                Intent intent = new Intent(activity.ApplicationContext, typeof(NewOrderActivity));
-                string json = JsonConvert.SerializeObject(order, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-                intent.PutExtra("id", json);
-                activity.StartActivity(intent);
-            }
-        }
-
-        private class DeleteButtonClickListener : Java.Lang.Object, View.IOnClickListener
-        {
-            private Activity activity;
-            Order order = new Order();
-            public DeleteButtonClickListener(Activity activity, Order order)
-            {
-                this.activity = activity;
-                this.order = order;
-            }
-
-            public void OnClick(View v)
-            {
-                //string name = (string)v.Tag;
-                //string text = string.Format("{0} Button Click.", name);
-                Toast.MakeText(this.activity, order.Id, ToastLength.Short).Show();
-                Console.WriteLine("grabe");
-            }
         }
     }
 }

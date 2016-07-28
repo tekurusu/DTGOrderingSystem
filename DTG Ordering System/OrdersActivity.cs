@@ -30,7 +30,7 @@ namespace DTG_Ordering_System
             SetContentView(Resource.Layout.orderList);
             
             orders = dbr.getAllOrders();
-            mListView = FindViewById<ListView>(Resource.Id.orderListView);
+			mListView = FindViewById<ListView>(Resource.Id.orderListView);
             mListView.Clickable = true;
             addButton = FindViewById<Button>(Resource.Id.orderAdd);
             syncButton = FindViewById<Button>(Resource.Id.syncButton);
@@ -85,15 +85,20 @@ namespace DTG_Ordering_System
 
 		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
 		{
-			var callDialog = new AlertDialog.Builder(this);
-			callDialog.SetMessage("Delete " + orders[e.Position].DeliveryDate + "?");
-			callDialog.SetNeutralButton("Delete", delegate
+			if (orders[e.Position].HasSent == false)
 			{
-				orders.RemoveAt(e.Position);
-				adapter.NotifyDataSetChanged();
-			});
-			callDialog.SetNegativeButton("Cancel", delegate { });
-			callDialog.Show();
+				var callDialog = new AlertDialog.Builder(this);
+				callDialog.SetMessage("Delete " + orders[e.Position].DeliveryDate + "?");
+				callDialog.SetNeutralButton("Delete", delegate
+				{
+					DBRepository dbr = new DBRepository();
+					dbr.deleteOrder(orders[e.Position].Id);
+					orders.RemoveAt(e.Position);
+					adapter.NotifyDataSetChanged();
+				});
+				callDialog.SetNegativeButton("Cancel", delegate { });
+				callDialog.Show();
+			}
 		}
 
         //public void myClickHandler(View v)
