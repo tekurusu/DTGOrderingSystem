@@ -18,8 +18,9 @@ namespace DTG_Ordering_System
     {
         private static List<Item> items = new List<Item>();
         private static List<OrderedItem> orderedItems = new List<OrderedItem>();
-        private ListView mListView;
-        private newOrderAdapter adapter;
+        private static List<ParentCategory> addedCategories = new List<ParentCategory>();
+        private ExpandableListView mListView;
+        private ExpandableNewOrderAdapter adapter;
 		private TextView deliveryDate;
         private Button addItemsButton;
 		private Button saveButton;
@@ -35,7 +36,7 @@ namespace DTG_Ordering_System
 
             SetContentView(Resource.Layout.newOrder);
 
-            mListView = FindViewById<ListView>(Resource.Id.selectedItemsListView);
+            mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
             addItemsButton = FindViewById<Button>(Resource.Id.addItems);
             saveButton = FindViewById<Button>(Resource.Id.saveButton);
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
@@ -66,8 +67,8 @@ namespace DTG_Ordering_System
             };
 
             items.Clear();
-            adapter = new newOrderAdapter(this, items);
-            mListView.Adapter = adapter;
+            adapter = new ExpandableNewOrderAdapter(this, addedCategories);
+            mListView.SetAdapter(adapter);
 
             addItemsButton.Click += (object sender, EventArgs e) =>
             {
@@ -167,6 +168,8 @@ namespace DTG_Ordering_System
         {
             base.OnActivityResult(requestCode, resultCode, data);
 
+            string categoryName;
+
             if (resultCode == Result.Ok)
             {
                 if (data != null)
@@ -175,16 +178,42 @@ namespace DTG_Ordering_System
                     var message = data.GetStringExtra("addedItems");
                     List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
 
-                    foreach (Item i in addedItems)
-                    {
-                        if (items.Exists(item => item.Id == i.Id) == true)
-                        {
-                            items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
-                        }
+                    //foreach (Item i in addedItems)
+                    //{
+                    //    if (items.Exists(item => item.Id == i.Id) == true)
+                    //    {
+                    //        items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                    //    }
 
-                        else
+                    //    else
+                    //    {
+                    //        items.Add(i);
+                    //    }
+                    //}
+
+                    categoryName = addedItems[0].Category.Name;
+                    ParentCategory pc = new ParentCategory(categoryName, addedItems);
+                    if (addedCategories.Exists(category => category.Name == categoryName) == false) //check if the category is already in the list
+                    {
+                        addedCategories.Add(pc);
+                    }
+
+                    else    //if category already exists..update all the item quantities
+                    {
+                        ParentCategory tempCategory = addedCategories.Find(category => category.Name == pc.Name);
+
+                        foreach (Item i in pc.Items)
                         {
-                            items.Add(i);
+                            //if item exists, update quantity. else add item to category.items
+                            if (tempCategory.Items.ToList().Exists(item => item.Id == i.Id) == true)
+                            {
+                                tempCategory.Items.ToList().Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                            }
+
+                            else
+                            {
+                                tempCategory.Items.Add(i);
+                            }
                         }
                     }
 

@@ -13,7 +13,8 @@
         android:layout_marginRight="0dp"
         android:layout_marginLeft="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft">
         <TextView
             android:text="Item Name"
             android:textAppearance="?android:attr/textAppearanceMedium"
