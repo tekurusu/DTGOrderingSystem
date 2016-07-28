@@ -118,8 +118,10 @@ namespace DTG_Ordering_System
                 {
                     var orderedItem = realm.CreateObject<OrderedItem>();
                     orderedItem.Quantity = i.Quantity;
-                    orderedItem.Item = getItem(i.Id);
-                    orderedItem.Order = getOrder(orderId);
+                    //orderedItem.Item = getItem(i.Id);
+                    //orderedItem.Order = getOrder(orderId);
+					orderedItem.ItemId = i.Id;
+					orderedItem.OrderId = orderId;
 
                     getItem(i.Id).OrderedItems.Add(orderedItem);
                     getOrder(orderId).OrderedItems.Add(orderedItem);
@@ -135,42 +137,12 @@ namespace DTG_Ordering_System
 
 			using (var transaction = realm.BeginWrite())
 			{
-                var orderedItems = getOrder(orderId).OrderedItems;
-
-                foreach (OrderedItem oi in orderedItems)
-                {
-                    foreach (Item i in items)
-                    {
-
-                    }
-                }
-
-				foreach (Item i in items)
-				{
-                    try
-                    {
-                        //var  = realm.All<OrderedItem>().Where(oi => oi.Order.Id == i.).First();
-                        //someOrderedItem.Quantity = i.Quantity;
-                        //someOrderedItem.Item = getItem(i.Id);
-                        //someOrderedItem.Order = getOrder(orderId);
-
-                        //getItem(i.Id).OrderedItems.Add(someOrderedItem);
-                        //getOrder(orderId).OrderedItems.Add(someOrderedItem);
-                    }
-                    catch
-                    {
-                        var orderedItem = realm.CreateObject<OrderedItem>();
-                        orderedItem.Quantity = i.Quantity;
-                        orderedItem.Item = getItem(i.Id);
-                        orderedItem.Order = getOrder(orderId);
-
-                        getItem(i.Id).OrderedItems.Add(orderedItem);
-                        getOrder(orderId).OrderedItems.Add(orderedItem);
-                    }                    
-                }
-
+				var someOrder = realm.All<Order>().Where(o => o.Id == orderId).First();
+				someOrder.OrderedItems.Clear();
 				transaction.Commit();
 			}
+
+			insertOrderedItems(items, orderId);
 		}
 
 		public void updateOrder(string orderId, string deliveryDate)
@@ -249,13 +221,28 @@ namespace DTG_Ordering_System
 			return orders;
         }
 
+		public void deleteOrderedItem(string orderId, string itemId)
+		{
+			realm = Realm.GetInstance(config);
+
+			var someOrderedItem = realm.All<OrderedItem>().Where(oi => oi.OrderId == orderId && oi.ItemId == itemId).First();
+
+			using (var transaction = realm.BeginWrite())
+			{
+				realm.Remove(someOrderedItem);
+				transaction.Commit();
+			}
+		}
+
+
 		public void deleteOrder(string orderId)
 		{
 			realm = Realm.GetInstance(config);
 
+			var someOrder = realm.All<Order>().Where(o => o.Id == orderId).First();
+
 			using (var transaction = realm.BeginWrite())
 			{
-				var someOrder = realm.All<Order>().Where(o => o.Id == orderId).First();
 				realm.Remove(someOrder);
 				transaction.Commit();
 			}

@@ -87,7 +87,9 @@ namespace DTG_Ordering_System
                 deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
                 foreach (OrderedItem oi in orderedItems)
                 {
-                    items.Add(oi.Item);
+					DBRepository dbr = new DBRepository();
+
+					items.Add(dbr.getItem(oi.ItemId));
                 }
 
                 adapter.NotifyDataSetChanged();
@@ -173,7 +175,9 @@ namespace DTG_Ordering_System
                 {
                     changeIsComing = true;
                     var message = data.GetStringExtra("addedItems");
-                    List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
+
+
+					List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
 
                     foreach (Item i in addedItems)
                     {
@@ -199,8 +203,18 @@ namespace DTG_Ordering_System
 			callDialog.SetMessage("Delete " + items[e.Position].Name + "?");
 			callDialog.SetNeutralButton("Delete", delegate
 			{
-				items.RemoveAt(e.Position);
-				adapter.NotifyDataSetChanged();
+				if (Intent.GetStringExtra("orderId") != null)
+				{
+					DBRepository dbr = new DBRepository();
+					dbr.deleteOrderedItem(Intent.GetStringExtra("orderId"), items[e.Position].Id);
+					items.RemoveAt(e.Position);
+					adapter.NotifyDataSetChanged();
+				}
+				else
+				{
+					items.RemoveAt(e.Position);
+					adapter.NotifyDataSetChanged();
+				}
 			});
 			callDialog.SetNegativeButton("Cancel", delegate { });
 			callDialog.Show();
