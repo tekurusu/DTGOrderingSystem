@@ -65,7 +65,7 @@ namespace DTG_Ordering_System
                 Intent intent = new Intent();
                 string json = JsonConvert.SerializeObject(addedItems, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                 intent.PutExtra("addedItems", json);
-                SetResult(Result.Ok, intent);
+                SetResult(Result.Ok, intent);                
                 Finish();
             };
         }
@@ -77,7 +77,20 @@ namespace DTG_Ordering_System
 			dbr.setQuantity(items[e.Position].Id, e.Quantity);
             if (e.Quantity != 0)
             {
-                addedItems.Add(items[e.Position]);
+                if (addedItems.Exists(x => x.Id == items[e.Position].Id) == false)
+                {
+                    addedItems.Add(items[e.Position]);
+                    itemAdd.Enabled = true;
+                }            
+            } else if (addedItems.Exists(x => x.Id == items[e.Position].Id) == true)
+            {
+                addedItems.Remove(items[e.Position]);
+
+            }
+            
+            if (addedItems.Count == 0)
+            {
+                itemAdd.Enabled = false;
             }
 
             adapter.NotifyDataSetChanged();

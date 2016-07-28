@@ -53,7 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/saveButton"
-            android:layout_weight="25" />
+            android:layout_weight="25"
+            android:enabled="false" />
         <Button
             android:text="Add Items"
             android:layout_width="wrap_content"
@@ -65,6 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/sendButton"
-            android:layout_weight="25" />
+            android:layout_weight="25"
+            android:enabled="false" />
     </LinearLayout>
 </LinearLayout>

@@ -50,6 +50,7 @@ namespace DTG_Ordering_System
             String dateNow = String.Format("{0:dd MMM yy}", now);
             deliveryDate.Text = dateNow;            
 
+            addedCategories.Clear();
             items.Clear();
             adapter = new ExpandableNewOrderAdapter(this, addedCategories);
             mListView.SetAdapter(adapter);
@@ -71,10 +72,23 @@ namespace DTG_Ordering_System
 
                 dateHolder = DateTime.Parse(order.DeliveryDate);
                 deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
+                sendButton.Enabled = true;
+
                 foreach (OrderedItem oi in orderedItems)
                 {
                     items.Add(oi.Item);
                 }
+
+                var temp = items.GroupBy(x => x.Category.Id);
+                foreach(var e in temp)
+                {
+                    List<Item> manyak = new List<Item>();
+                    foreach (Item i in e)
+                    {
+                        manyak.Add(i);
+                    }
+                    addedCategories.Add(new ParentCategory(e.First().Category.Name, manyak));
+                }               
 
                 adapter.NotifyDataSetChanged();
             }
@@ -84,6 +98,8 @@ namespace DTG_Ordering_System
                 DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
                 {
                     deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                    changeIsComing = true;
+                    if (items.Count != 0) saveButton.Enabled = true;
                 });
                 Bundle args = new Bundle();
                 args.PutInt("year", dateHolder.Year);
@@ -192,7 +208,8 @@ namespace DTG_Ordering_System
             {
                 if (data != null)
                 {
-                    changeIsComing = true;
+                    saveButton.Enabled = true;
+                    sendButton.Enabled = true;
                     var message = data.GetStringExtra("addedItems");
                     List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
                     categoryName = addedItems[0].Category.Name;
@@ -200,6 +217,10 @@ namespace DTG_Ordering_System
                     if (addedCategories.Exists(category => category.Name == categoryName) == false) //check if the category is already in the list
                     {
                         addedCategories.Add(pc);
+                        foreach(Item i in pc.Items)
+                        {
+                            items.Add(i);
+                        }
                     }
 
                     else    //if category already exists..update all the item quantities
@@ -212,16 +233,19 @@ namespace DTG_Ordering_System
                             if (tempCategory.Items.ToList().Exists(item => item.Id == i.Id) == true)
                             {
                                 tempCategory.Items.ToList().Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                                //items.Find(item => item.Id == i.Id).Quantity += i.Quantity;                                
                             }
 
                             else
                             {
                                 tempCategory.Items.Add(i);
+                                items.Add(i);
                             }
                         }
                     }
 
                     adapter.NotifyDataSetChanged();
+                    changeIsComing = true;
                 }
             }			
         }
@@ -231,7 +255,7 @@ namespace DTG_Ordering_System
             if (changeIsComing)
             {
                 var callDialog = new AlertDialog.Builder(this);
-                callDialog.SetMessage("Order has been modified, discard changes?");
+                callDialog.SetMessage("Discard changes for this order?");
                 callDialog.SetNeutralButton("Yes", delegate
                 {
                     base.OnBackPressed();
