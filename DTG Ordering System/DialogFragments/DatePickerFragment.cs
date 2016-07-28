@@ -42,8 +42,16 @@ namespace DTG_Ordering_System
         public void OnDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
         {
             DateTime selectedDate = new DateTime(year, monthOfYear + 1, dayOfMonth);
-            //Log.Debug(TAG, selectedDate.ToLongDateString());
-            _dateSelectedHandler(selectedDate);
+			//Log.Debug(TAG, selectedDate.ToLongDateString());
+
+			if (selectedDate.Day < DateTime.Now.Day)
+			{
+				Toast.MakeText(this.Activity, "Date is invalid!", ToastLength.Long).Show();
+			}
+			else
+			{
+				_dateSelectedHandler(selectedDate);
+			}
         }
     }
 }
