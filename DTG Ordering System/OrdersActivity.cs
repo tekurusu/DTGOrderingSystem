@@ -42,10 +42,9 @@ namespace DTG_Ordering_System
             {
                 mListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
                 {
-                    Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
-                    string json = JsonConvert.SerializeObject(orders[e.Position], new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-                    intent.PutExtra("id", json);
-                    StartActivity(intent);
+                    Intent intent = new Intent(this, typeof(NewOrderActivity));
+                    intent.PutExtra("orderId", orders[e.Position].Id);
+                    StartActivityForResult(intent, 0);
                 };
             }
 
@@ -71,16 +70,15 @@ namespace DTG_Ordering_System
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
-            Console.WriteLine("1");
 
-            if (resultCode == Result.Ok)
+            try
             {
-                Console.WriteLine("2");
                 var orderId = data.GetStringExtra("orderId");
                 orders.Add(dbr.getOrder(orderId));
 
                 adapter.NotifyDataSetChanged();
             }
+            catch { }
         }
 
 		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
@@ -100,20 +98,5 @@ namespace DTG_Ordering_System
 				callDialog.Show();
 			}
 		}
-
-        //public void myClickHandler(View v)
-        //{
-        //    mListView = FindViewById<ListView>(Resource.Id.orderListView);
-        //    for (int i=0; i<mListView.ChildCount; i++)
-        //    {
-        //        mListView.GetChildAt(i).SetBackgroundColor(Android.Graphics.Color.Blue);
-        //    }
-        //    LinearLayout parent = (LinearLayout)v.Parent;
-        //    TextView child = (TextView)parent.GetChildAt(0);
-        //    Button btnChild = (Button)parent.GetChildAt(1);
-
-        //    int c = Android.Graphics.Color.Cyan;
-
-        //}
     }
 }

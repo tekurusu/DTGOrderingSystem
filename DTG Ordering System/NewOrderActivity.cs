@@ -26,7 +26,9 @@ namespace DTG_Ordering_System
 		private Button sendButton;
         private Button editDate;
         private DateTime dateHolder;
+        private bool changeIsComing;
         DBRepository dbr = new DBRepository();
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -39,114 +41,62 @@ namespace DTG_Ordering_System
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
             deliveryDate = FindViewById<TextView>(Resource.Id.deliveryDate);
             editDate = FindViewById<Button>(Resource.Id.editDate);
-
-            if (Intent.GetStringExtra("id") != null)
-            {
-                items = new List<Item>();
-                orderedItems = new List<OrderedItem>();
-                string message = Intent.GetStringExtra("id");
-                Order order = JsonConvert.DeserializeObject<Order>(message);
+            changeIsComing = false;
                 
-                orderedItems = dbr.getAllOrderedItems(order.Id);
+            //code for datepicker
+            DateTime now = DateTime.Now.ToLocalTime();
+            dateHolder = now;
+            String dateNow = String.Format("{0:dd MMM yy}", now);
+            deliveryDate.Text = dateNow;
+            editDate.Click += (object sender, EventArgs e) =>
+            {
+                DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
+                {
+                    //deliveryDate.Text = time.ToLongDateString();
+                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                    dateHolder = time;
+                });
+                Bundle args = new Bundle();
+                args.PutInt("year", dateHolder.Year);
+                args.PutInt("month", dateHolder.Month);
+                args.PutInt("day", dateHolder.Day);
+
+                frag.Arguments = args;
+                frag.Show(FragmentManager, DatePickerFragment.TAG);
+            };
+
+            items.Clear();
+            adapter = new newOrderAdapter(this, items);
+            mListView.Adapter = adapter;
+
+            addItemsButton.Click += (object sender, EventArgs e) =>
+            {
+                Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
+                StartActivityForResult(intent, 0);
+            };
+
+            mListView.ItemLongClick += DeleteItem_OnLongClick;
+            saveButton.Click += SaveButton_OnClick;
+            sendButton.Click += SendButton_OnClick;
+
+            if (Intent.GetStringExtra("orderId") != null)
+            {
+                Order order = dbr.getOrder(Intent.GetStringExtra("orderId"));
+                List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
+
+                deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
                 foreach (OrderedItem oi in orderedItems)
                 {
-                	items.Add(oi.Item);
+                    items.Add(oi.Item);
                 }
 
-                //code for datepicker
-				DateTime now = DateTime.Parse(order.DeliveryDate);
-                dateHolder = now;
-				String dateNow = String.Format("{0:dd MMM yy}", now);
-                deliveryDate.Text = dateNow;
-                editDate.Click += (object sender, EventArgs e) =>
-                {
-                    DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
-                    {
-                    	deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
-                        dateHolder = time;
-                    });
-                    Bundle args = new Bundle();
-                    args.PutInt("year", dateHolder.Year);
-                    args.PutInt("month", dateHolder.Month);
-                    args.PutInt("day", dateHolder.Day);
-
-                    frag.Arguments = args;
-                    frag.Show(FragmentManager, DatePickerFragment.TAG);
-                };
-
-                try
-                {
-                    adapter = new newOrderAdapter(this, items);
-                    mListView.Adapter = adapter;
-                }
-                catch
-                {
-
-                }
-
-                addItemsButton.Click += (object sender, EventArgs e) =>
-                {
-                    Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
-                    StartActivityForResult(intent, 0);
-                };
-
-                mListView.ItemLongClick += DeleteItem_OnLongClick;
-                saveButton.Click += SaveButton_OnClick;
-                sendButton.Click += SendButton_OnClick;
-            }
-            else
-            {
-                items = new List<Item>();
-                orderedItems = new List<OrderedItem>();
-
-                
-                //code for datepicker
-                DateTime now = DateTime.Now.ToLocalTime();
-                dateHolder = now;
-                String dateNow = String.Format("{0:dd MMM yy}", now);
-                deliveryDate.Text = dateNow;
-                editDate.Click += (object sender, EventArgs e) =>
-                {
-                    DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
-                    {
-                        //deliveryDate.Text = time.ToLongDateString();
-                        deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
-                        dateHolder = time;
-                    });
-                    Bundle args = new Bundle();
-                    args.PutInt("year", dateHolder.Year);
-                    args.PutInt("month", dateHolder.Month);
-                    args.PutInt("day", dateHolder.Day);
-
-                    frag.Arguments = args;
-                    frag.Show(FragmentManager, DatePickerFragment.TAG);
-                };
-
-                try
-                {
-                    adapter = new newOrderAdapter(this, items);
-                    mListView.Adapter = adapter;
-                }
-                catch
-                {
-
-                }
-
-                addItemsButton.Click += (object sender, EventArgs e) =>
-                {
-                    Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
-                    StartActivityForResult(intent, 0);
-                };
-
-                mListView.ItemLongClick += DeleteItem_OnLongClick;
-                saveButton.Click += SaveButton_OnClick;
-                sendButton.Click += SendButton_OnClick;
+                adapter.NotifyDataSetChanged();
             }
         }
 
 		void SaveButton_OnClick(object sender, EventArgs e)
 		{
-			if (Intent.GetStringExtra("id") != null)
+			if (Intent.GetStringExtra("orderId") != null)
 			{
 				if (items.Count == 0)
 				{
@@ -159,9 +109,9 @@ namespace DTG_Ordering_System
 					callDialog.SetNeutralButton("OK", delegate
 					{
 						DBRepository dbr = new DBRepository();
-						string orderId = Intent.GetStringExtra("id");
+						string orderId = Intent.GetStringExtra("orderId");
 						dbr.updateOrder(orderId, deliveryDate.Text);
-						dbr.updateOrderedItems(items, orderId);
+						//dbr.updateOrderedItems(items, orderId);
 
 						Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
 						intent.PutExtra("OrderId", orderId);
@@ -222,7 +172,7 @@ namespace DTG_Ordering_System
 
 					Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
 					intent.PutExtra("OrderId", orderId);
-					StartActivityForResult(intent, 1);
+                    StartActivityForResult(intent, 1);
 
 					items.Clear();
 					adapter.NotifyDataSetChanged();
@@ -236,30 +186,30 @@ namespace DTG_Ordering_System
         {
             base.OnActivityResult(requestCode, resultCode, data);
 
-            //if the activity is ok retrieve json then add to the item list.
             if (resultCode == Result.Ok)
             {
-				if (data != null)
-				{
-					var message = data.GetStringExtra("addedItems");
-					List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
+                if (data != null)
+                {
+                    changeIsComing = true;
+                    var message = data.GetStringExtra("addedItems");
+                    List<Item> addedItems = JsonConvert.DeserializeObject<List<Item>>(message);
 
-					foreach (Item i in addedItems)
-					{
-						if (items.Exists(item => item.Id == i.Id) == true)
-						{
-							items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
-						}
+                    foreach (Item i in addedItems)
+                    {
+                        if (items.Exists(item => item.Id == i.Id) == true)
+                        {
+                            items.Find(item => item.Id == i.Id).Quantity += i.Quantity;
+                        }
 
-						else
-						{
-							items.Add(i);
-						}
-					}
+                        else
+                        {
+                            items.Add(i);
+                        }
+                    }
 
-					adapter.NotifyDataSetChanged();
-				}
-            }
+                    adapter.NotifyDataSetChanged();
+                }
+            }			
         }
 
 		void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
@@ -274,5 +224,24 @@ namespace DTG_Ordering_System
 			callDialog.SetNegativeButton("Cancel", delegate { });
 			callDialog.Show();
 		}
+
+        public override void OnBackPressed()
+        {
+            if (changeIsComing)
+            {
+                var callDialog = new AlertDialog.Builder(this);
+                callDialog.SetMessage("Order has been modified, discard changes?");
+                callDialog.SetNeutralButton("Yes", delegate
+                {
+                    base.OnBackPressed();
+                });
+                callDialog.SetNegativeButton("No", delegate { });
+                callDialog.Show();
+            }
+            else
+            {
+                base.OnBackPressed();
+            }    
+        }
     }
 }

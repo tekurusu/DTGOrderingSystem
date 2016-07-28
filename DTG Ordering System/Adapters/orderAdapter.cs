@@ -53,15 +53,9 @@ namespace DTG_Ordering_System
             orderDate.Text = orders[position].DeliveryDate;
 
             TextView hasSent = row.FindViewById<TextView>(Resource.Id.hasSent);
-            if (orders[position].HasSent == true)
-            {
-                hasSent.Text = "Sent";
-            }
-			else
-            {
-                hasSent.Text = "Not Yet Sent";
-            }
-            
+
+            hasSent.Text = (orders[position].HasSent) ? "Sent" : "Draft";
+
             return row;
         }
     }

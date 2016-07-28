@@ -18,7 +18,7 @@ namespace DTG_Ordering_System
         private static List<Category> categories = new List<Category>();
         private ListView mListView;
         private ItemAdapter adapter;
-        private Button itemAdd;   
+        private Button itemAdd;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -82,6 +82,25 @@ namespace DTG_Ordering_System
 
             adapter.NotifyDataSetChanged();
         }
-	}
+
+        public override void OnBackPressed()
+        {
+            if (addedItems.Count > 0)
+            {
+                var callDialog = new AlertDialog.Builder(this);
+                callDialog.SetMessage("Are you sure you want to discard the quantities specified in this category?");
+                callDialog.SetNeutralButton("Yes", delegate
+                {
+                    base.OnBackPressed();
+                });
+                callDialog.SetNegativeButton("No", delegate { });
+                callDialog.Show();
+            }
+            else
+            {
+                base.OnBackPressed();
+            }    
+        }
+    }
 }
 
