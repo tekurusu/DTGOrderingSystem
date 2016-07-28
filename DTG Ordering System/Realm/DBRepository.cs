@@ -129,22 +129,45 @@ namespace DTG_Ordering_System
             }
         }
 
-		public void updateOrderedItems(List<Item> items, string orderId)
+        public void updateOrderedItems(List<Item> items, string orderId)
 		{
 			realm = Realm.GetInstance(config);
 
 			using (var transaction = realm.BeginWrite())
 			{
+                var orderedItems = getOrder(orderId).OrderedItems;
+
+                foreach (OrderedItem oi in orderedItems)
+                {
+                    foreach (Item i in items)
+                    {
+
+                    }
+                }
+
 				foreach (Item i in items)
 				{
-					var someOrderedItem = realm.All<OrderedItem>().Where(oi => oi.Order.Id == orderId).First();
-					someOrderedItem.Quantity = i.Quantity;
-					someOrderedItem.Item = getItem(i.Id);
-					someOrderedItem.Order = getOrder(orderId);
+                    try
+                    {
+                        //var  = realm.All<OrderedItem>().Where(oi => oi.Order.Id == i.).First();
+                        //someOrderedItem.Quantity = i.Quantity;
+                        //someOrderedItem.Item = getItem(i.Id);
+                        //someOrderedItem.Order = getOrder(orderId);
 
-					getItem(i.Id).OrderedItems.Add(someOrderedItem);
-					getOrder(orderId).OrderedItems.Add(someOrderedItem);
-				}
+                        //getItem(i.Id).OrderedItems.Add(someOrderedItem);
+                        //getOrder(orderId).OrderedItems.Add(someOrderedItem);
+                    }
+                    catch
+                    {
+                        var orderedItem = realm.CreateObject<OrderedItem>();
+                        orderedItem.Quantity = i.Quantity;
+                        orderedItem.Item = getItem(i.Id);
+                        orderedItem.Order = getOrder(orderId);
+
+                        getItem(i.Id).OrderedItems.Add(orderedItem);
+                        getOrder(orderId).OrderedItems.Add(orderedItem);
+                    }                    
+                }
 
 				transaction.Commit();
 			}

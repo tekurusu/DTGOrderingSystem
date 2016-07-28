@@ -96,61 +96,42 @@ namespace DTG_Ordering_System
 
 		void SaveButton_OnClick(object sender, EventArgs e)
 		{
-			if (Intent.GetStringExtra("orderId") != null)
+			if (items.Count == 0)
 			{
-				if (items.Count == 0)
-				{
-					Toast.MakeText(this, "There are no items to be saved.", ToastLength.Long).Show();
-				}
-				else
-				{
-					var callDialog = new AlertDialog.Builder(this);
-					callDialog.SetMessage("Are you sure you want to save this order as a draft?");
-					callDialog.SetNeutralButton("OK", delegate
-					{
-						DBRepository dbr = new DBRepository();
-						string orderId = Intent.GetStringExtra("orderId");
-						dbr.updateOrder(orderId, deliveryDate.Text);
-						//dbr.updateOrderedItems(items, orderId);
-
-						Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-						intent.PutExtra("OrderId", orderId);
-						StartActivityForResult(intent, 1);
-
-						items.Clear();
-						adapter.NotifyDataSetChanged();
-					});
-					callDialog.SetNegativeButton("Cancel", delegate { });
-					callDialog.Show();
-				}
+				Toast.MakeText(this, "There are no items to be saved.", ToastLength.Long).Show();
 			}
 			else
 			{
-				if (items.Count == 0)
+				var callDialog = new AlertDialog.Builder(this);
+				callDialog.SetMessage("Are you sure you want to save this order as a draft?");
+				callDialog.SetNeutralButton("OK", delegate
 				{
-					Toast.MakeText(this, "There are no items to be saved.", ToastLength.Long).Show();
-				}
-				else
-				{
-					var callDialog = new AlertDialog.Builder(this);
-					callDialog.SetMessage("Are you sure you want to save this order as a draft?");
-					callDialog.SetNeutralButton("OK", delegate
-					{
-						DBRepository dbr = new DBRepository();
-						string orderId = dbr.insertOrder(deliveryDate.Text);
-						dbr.insertOrderedItems(items, orderId);
+					DBRepository dbr = new DBRepository();
+                    string orderId;
 
-						Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-						intent.PutExtra("OrderId", orderId);
-						StartActivityForResult(intent, 1);
+                    if (Intent.GetStringExtra("orderId") == null)
+                    {
+                        orderId = dbr.insertOrder(deliveryDate.Text);
+                        dbr.insertOrderedItems(items, orderId);
+                    }
+                    else
+                    {
+                        orderId = Intent.GetStringExtra("orderId");
+                        dbr.updateOrder(orderId, deliveryDate.Text);
+                        dbr.updateOrderedItems(items, orderId);
+                    }
 
-						items.Clear();
-						adapter.NotifyDataSetChanged();
-					});
-					callDialog.SetNegativeButton("Cancel", delegate { });
-					callDialog.Show();
-				}
+                    Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+					intent.PutExtra("OrderId", orderId);
+					StartActivityForResult(intent, 1);
+
+					items.Clear();
+					adapter.NotifyDataSetChanged();
+				});
+				callDialog.SetNegativeButton("Cancel", delegate { });
+				callDialog.Show();
 			}
+			
 		}
 
 		void SendButton_OnClick(object sender, EventArgs e)
