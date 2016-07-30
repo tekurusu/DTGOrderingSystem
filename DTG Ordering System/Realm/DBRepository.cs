@@ -136,20 +136,7 @@ namespace DTG_Ordering_System
 			}
 		}
 
-		public void updateOrder(string orderId, string deliveryDate)
-		{
-			realm = Realm.GetInstance(config);
-
-			using (var transaction = realm.BeginWrite())
-			{
-				var someOrder = realm.All<Order>().Where(o => o.Id == orderId).First();
-				someOrder.DeliveryDate = deliveryDate;
-
-				transaction.Commit();
-			}
-		}
-
-		public string insertOrder(string deliveryDate)
+		public string insertOrder(string deliveryDate, bool hasSent)
 		{
 			realm = Realm.GetInstance(config);
 
@@ -160,7 +147,7 @@ namespace DTG_Ordering_System
 
 				order.Id = UUID;
 				order.DeliveryDate = deliveryDate;
-				order.HasSent = false;
+				order.HasSent = hasSent;
 
 				transaction.Commit();
 
@@ -168,14 +155,15 @@ namespace DTG_Ordering_System
 			}
 		}
 
-		public void sendOrder(string orderId)
+		public void updateOrder(string orderId, string deliveryDate, bool hasSent)
 		{
 			realm = Realm.GetInstance(config);
 
 			using (var transaction = realm.BeginWrite())
 			{
 				var someOrder = realm.All<Order>().Where(o => o.Id == orderId).First();
-				someOrder.HasSent = true;
+				someOrder.DeliveryDate = deliveryDate;
+				someOrder.HasSent = hasSent;
 
 				transaction.Commit();
 			}

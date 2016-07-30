@@ -135,13 +135,13 @@ namespace DTG_Ordering_System
 
                 if (Intent.GetStringExtra("orderId") == null)
                 {
-                    orderId = dbr.insertOrder(deliveryDate.Text);
+					orderId = dbr.insertOrder(deliveryDate.Text, false);
                     dbr.insertOrderedItems(items, orderId, addedQuantities);
                 }
                 else
                 {
                     orderId = Intent.GetStringExtra("orderId");
-                    dbr.updateOrder(orderId, deliveryDate.Text);
+					dbr.updateOrder(orderId, deliveryDate.Text, false);
 					dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
                 }
 
@@ -163,9 +163,19 @@ namespace DTG_Ordering_System
 			callDialog.SetNeutralButton("OK", delegate
 			{
 				dbr = new DBRepository();
-				string orderId = dbr.insertOrder(deliveryDate.Text);
-				dbr.insertOrderedItems(items, orderId, addedQuantities);
-				dbr.sendOrder(orderId);
+				string orderId;
+
+				if (Intent.GetStringExtra("orderId") == null)
+				{
+					orderId = dbr.insertOrder(deliveryDate.Text, true);
+					dbr.insertOrderedItems(items, orderId, addedQuantities);
+				}
+				else
+				{
+					orderId = Intent.GetStringExtra("orderId");
+					dbr.updateOrder(orderId, deliveryDate.Text, true);
+					dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
+				}
 
 				Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
 				intent.PutExtra("OrderId", orderId);
@@ -192,17 +202,17 @@ namespace DTG_Ordering_System
                 {
 					if (Intent.GetStringExtra("orderId") != null)
 					{
+						addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
 						addedCategories[groupPosition].Items.RemoveAt(childPosition);
 						adapter.NotifyDataSetChanged();
-						addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
 					}
 					else
 					{
 						Item searchedItem = items.Find(x => x.Id == addedCategories[groupPosition].Items[childPosition].Id);
 						items.Remove(searchedItem);
+						addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
 						addedCategories[groupPosition].Items.RemoveAt(childPosition);
 						adapter.NotifyDataSetChanged();
-						addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
 					}
 
 					changeIsComing = true;
