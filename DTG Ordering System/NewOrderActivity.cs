@@ -69,37 +69,52 @@ namespace DTG_Ordering_System
 
             if (Intent.GetStringExtra("orderId") != null)
             {
-                //***FOR EDIT****//
-                
-                Order order = dbr.getOrder(Intent.GetStringExtra("orderId"));
-                List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
+				//***FOR EDIT****//
 
-                dateHolder = DateTime.Parse(order.DeliveryDate);
-                deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
-                sendButton.Enabled = true;
+				Order order = dbr.getOrder(Intent.GetStringExtra("orderId"));
+				List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
 
-                //Toast.MakeText(this, addedQuantities.Count.ToString(), ToastLength.Long).Show();
-                foreach (OrderedItem oi in orderedItems)
-                {
+				dateHolder = DateTime.Parse(order.DeliveryDate);
+				deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
+				sendButton.Enabled = true;
+
+				//Toast.MakeText(this, addedQuantities.Count.ToString(), ToastLength.Long).Show();
+				foreach (OrderedItem oi in orderedItems)
+				{
 					dbr = new DBRepository();
 
 					items.Add(dbr.getItem(oi.ItemId));
 
-                    addedQuantities.Add(oi.ItemId, oi.Quantity);
-                }
+					addedQuantities.Add(oi.ItemId, oi.Quantity);
+				}
 
-                var temp = items.GroupBy(x => x.Category.Id);
-                foreach (var e in temp)
-                {
-                    List<Item> listHolder = new List<Item>();
-                    foreach (Item i in e)
-                    {
-                        listHolder.Add(i);
-                    }
-                    addedCategories.Add(new ParentCategory(e.First().Category.Name, listHolder));
-                }
+				var temp = items.GroupBy(x => x.Category.Id);
+				foreach (var e in temp)
+				{
+					List<Item> listHolder = new List<Item>();
+					foreach (Item i in e)
+					{
+						listHolder.Add(i);
+					}
+					addedCategories.Add(new ParentCategory(e.First().Category.Name, listHolder));
+				}
 
-                adapter.NotifyDataSetChanged();
+				adapter.NotifyDataSetChanged();
+
+				if (Intent.GetBooleanExtra("hasSent", false) == false)
+				{
+					editDate.Visibility = ViewStates.Visible;
+					saveButton.Visibility = ViewStates.Visible;
+					sendButton.Visibility = ViewStates.Visible;
+					addItemsButton.Visibility = ViewStates.Visible;
+				}
+				else
+				{
+					editDate.Visibility = ViewStates.Gone;
+					saveButton.Visibility = ViewStates.Gone;
+					sendButton.Visibility = ViewStates.Gone;
+					addItemsButton.Visibility = ViewStates.Gone;
+				}
             }
 
             editDate.Click += (object sender, EventArgs e) =>
@@ -110,6 +125,7 @@ namespace DTG_Ordering_System
                     if (items.Count != 0)
                     {
                         saveButton.Enabled = true;
+						sendButton.Enabled = true;
                         changeIsComing = true;
 
                     }
@@ -190,47 +206,52 @@ namespace DTG_Ordering_System
 
         void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
         {
-            long listposition = mListView.GetExpandableListPosition(e.Position);
-            int childPosition = ExpandableListView.GetPackedPositionChild(listposition);
-            int groupPosition = ExpandableListView.GetPackedPositionGroup(listposition);
+			if (Intent.GetBooleanExtra("hasSent", false) == false)
+			{
+				long listposition = mListView.GetExpandableListPosition(e.Position);
+				int childPosition = ExpandableListView.GetPackedPositionChild(listposition);
+				int groupPosition = ExpandableListView.GetPackedPositionGroup(listposition);
 
-            if (ExpandableListView.GetPackedPositionType(listposition) == PackedPositionType.Child)
-            {
-                var callDialog = new AlertDialog.Builder(this);
-                callDialog.SetMessage("Delete " + addedCategories[groupPosition].Items[childPosition].Name + "?");
-                callDialog.SetNeutralButton("Delete", delegate
-                {
-					if (Intent.GetStringExtra("orderId") != null)
+				if (ExpandableListView.GetPackedPositionType(listposition) == PackedPositionType.Child)
+				{
+					var callDialog = new AlertDialog.Builder(this);
+					callDialog.SetMessage("Delete " + addedCategories[groupPosition].Items[childPosition].Name + "?");
+					callDialog.SetNeutralButton("Delete", delegate
 					{
-						addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
-						addedCategories[groupPosition].Items.RemoveAt(childPosition);
-						adapter.NotifyDataSetChanged();
-					}
-					else
-					{
-						Item searchedItem = items.Find(x => x.Id == addedCategories[groupPosition].Items[childPosition].Id);
-						items.Remove(searchedItem);
-						addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
-						addedCategories[groupPosition].Items.RemoveAt(childPosition);
-						adapter.NotifyDataSetChanged();
-					}
+						if (Intent.GetStringExtra("orderId") != null)
+						{
+							addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
+							addedCategories[groupPosition].Items.RemoveAt(childPosition);
+							adapter.NotifyDataSetChanged();
+						}
+						else
+						{
+							Item searchedItem = items.Find(x => x.Id == addedCategories[groupPosition].Items[childPosition].Id);
+							items.Remove(searchedItem);
+							addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
+							addedCategories[groupPosition].Items.RemoveAt(childPosition);
+							adapter.NotifyDataSetChanged();
+						}
 
-					changeIsComing = true;
+						changeIsComing = true;
 
-					if (addedCategories[groupPosition].Items.Count != 0)
-					{
-						saveButton.Enabled = true;
-						adapter.NotifyDataSetChanged();
-					}
-					else
-					{
-						saveButton.Enabled = false;
-						adapter.NotifyDataSetChanged();
-					}
-                });
-                callDialog.SetNegativeButton("Cancel", delegate { });
-                callDialog.Show();
-            }
+						if (addedCategories[groupPosition].Items.Count != 0)
+						{
+							saveButton.Enabled = true;
+							sendButton.Enabled = true;
+							adapter.NotifyDataSetChanged();
+						}
+						else
+						{
+							saveButton.Enabled = false;
+							sendButton.Enabled = false;
+							adapter.NotifyDataSetChanged();
+						}
+					});
+					callDialog.SetNegativeButton("Cancel", delegate { });
+					callDialog.Show();
+				}
+			}
         }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
