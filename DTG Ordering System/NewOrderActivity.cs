@@ -221,7 +221,12 @@ namespace DTG_Ordering_System
 						if (Intent.GetStringExtra("orderId") != null)
 						{
 							addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
+                            
 							addedCategories[groupPosition].Items.RemoveAt(childPosition);
+                            if (addedCategories[groupPosition].Items.Count == 0)
+                            {
+                                addedCategories.RemoveAt(groupPosition);
+                            }
 							adapter.NotifyDataSetChanged();
 						}
 						else
@@ -230,12 +235,16 @@ namespace DTG_Ordering_System
 							items.Remove(searchedItem);
 							addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
 							addedCategories[groupPosition].Items.RemoveAt(childPosition);
-							adapter.NotifyDataSetChanged();
+                            if (addedCategories[groupPosition].Items.Count == 0)
+                            {
+                                addedCategories.RemoveAt(groupPosition);
+                            }
+                            adapter.NotifyDataSetChanged();
 						}
 
 						changeIsComing = true;
 
-						if (addedCategories[groupPosition].Items.Count != 0)
+						if (addedCategories.Count != 0)
 						{
 							saveButton.Enabled = true;
 							sendButton.Enabled = true;
