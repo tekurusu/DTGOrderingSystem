@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -59,13 +59,17 @@ namespace DTG_Ordering_System
 
             syncButton.Click += (object sender, EventArgs e) =>
             { 
-                dbr.syncDB();
+				var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
+				new Thread(new ThreadStart(delegate
+				{
+					dbr.syncDB();
+					//hide progress dialogue
+					RunOnUiThread(() => progressDialog.Hide());
+				})).Start();
 
-                Toast.MakeText(this, "Database reloaded from scratch!", ToastLength.Short).Show();
-
-                orders.Clear();
-                adapter.NotifyDataSetChanged();
-            };
+				orders.Clear();
+				adapter.NotifyDataSetChanged();
+			};
         }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
