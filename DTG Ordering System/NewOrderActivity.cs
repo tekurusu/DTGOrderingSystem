@@ -101,7 +101,7 @@ namespace DTG_Ordering_System
 
 				adapter.NotifyDataSetChanged();
 
-				if (Intent.GetBooleanExtra("hasSent", false) == false)
+				if ((Intent.GetBooleanExtra("hasSent", false) == false) || (Intent.GetBooleanExtra("replacement", false) == true))
 				{
 					editDate.Visibility = ViewStates.Visible;
 					saveButton.Visibility = ViewStates.Visible;

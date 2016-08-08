@@ -104,16 +104,22 @@ namespace DTG_Ordering_System
 				callDialog.Show();
 			}
 			else
-			{ 
+			{
 				var callDialog = new AlertDialog.Builder(this);
 				callDialog.SetMessage("Edit order: " + orders[e.Position].DeliveryDate + " for replacement?");
 				callDialog.SetNeutralButton("Yes", delegate
 				{
-					//insert replace order function here
+					Intent intent = new Intent(this, typeof(NewOrderActivity));
+					intent.PutExtra("orderId", orders[e.Position].Id);
+					intent.PutExtra("hasSent", orders[e.Position].HasSent);
+					intent.PutExtra("replacement", true);
+					StartActivityForResult(intent, 0);
 				});
 				callDialog.SetNegativeButton("No", delegate { });
 				callDialog.Show();
 			}
 		}
+
+
     }
 }
