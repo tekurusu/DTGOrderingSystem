@@ -120,6 +120,16 @@ namespace DTG_Ordering_System
 			}
 		}
 
-
+        public override void OnBackPressed()
+        {
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Close DTG Ordering System app?");
+            callDialog.SetNeutralButton("Yes", delegate
+            {
+                this.FinishAffinity();
+            });
+            callDialog.SetNegativeButton("No", delegate { });
+            callDialog.Show();
+        }
     }
 }
