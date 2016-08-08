@@ -205,6 +205,11 @@ namespace DTG_Ordering_System
             
         }
 
+        public string getBranchName(string branchId)
+        {
+            return Realm.GetInstance(config).All<Account>().Where(c => c.BranchId == branchId).First().Branch;
+        }
+
         //public string getBranchId(string )
 
         public Order getOrder(string orderId)

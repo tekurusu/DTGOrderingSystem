@@ -9,10 +9,11 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Android.Preferences;
 
 namespace DTG_Ordering_System
 {
-    [Activity(Label = "Log In", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "DTG Ordering System", MainLauncher = true, Icon = "@drawable/icon")]
     public class LoginActivity : Activity
     {
         private Button loginButton;
@@ -20,11 +21,21 @@ namespace DTG_Ordering_System
         private EditText passwordText;
         DBRepository dbr = new DBRepository();
         private Button syncButton;
+        string branchId;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             dbr = new DBRepository();
             base.OnCreate(savedInstanceState);
+
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            branchId = prefs.GetString("branchId", null);
+            if (branchId != null)
+            {
+                Intent intent = new Intent(this, typeof(OrdersActivity));
+                StartActivity(intent);
+            }
+
             SetContentView(Resource.Layout.loginScreen);
             loginButton = FindViewById<Button>(Resource.Id.loginButton);
             userSpinner = FindViewById<Spinner>(Resource.Id.userSpinner);
@@ -47,7 +58,13 @@ namespace DTG_Ordering_System
                 if (dbr.authenticate(userSpinner.SelectedItem.ToString(), passwordText.Text) >= 1)
                 {
                     Intent intent = new Intent(this, typeof(OrdersActivity));
-                    intent.PutExtra("branchId", accounts2[userSpinner.SelectedItemPosition].BranchId.ToString());
+                    //intent.PutExtra("branchId", accounts2[userSpinner.SelectedItemPosition].BranchId.ToString());
+
+                    //ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+                    ISharedPreferencesEditor editor = prefs.Edit();
+                    editor.PutString("branchId", accounts2[userSpinner.SelectedItemPosition].BranchId.ToString());
+                    editor.Apply();
+
                     StartActivity(intent);
                     //Toast.MakeText(this, accounts2[userSpinner.SelectedItemPosition].BranchId.ToString(), ToastLength.Long).Show();
                     //StartActivityForResult(intent, 2);
@@ -71,6 +88,18 @@ namespace DTG_Ordering_System
                 adapter.NotifyDataSetChanged();
             };
             //Create your application here
+        }
+
+        public override void OnBackPressed()
+        {
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Close DTG Ordering System app?");
+            callDialog.SetNeutralButton("Yes", delegate
+            {
+                this.FinishAffinity();
+            });
+            callDialog.SetNegativeButton("No", delegate { });
+            callDialog.Show();
         }
     }
 }

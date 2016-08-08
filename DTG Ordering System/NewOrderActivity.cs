@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Newtonsoft.Json;
+using Android.Preferences;
 
 namespace DTG_Ordering_System
 {
@@ -31,13 +32,16 @@ namespace DTG_Ordering_System
         private bool changeIsComing;
         DBRepository dbr = new DBRepository();
         private string branchId;
+        ISharedPreferences prefs;
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.newOrder);
-            branchId = Intent.GetStringExtra("branchId");
-			mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
+            prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            branchId = prefs.GetString("branchId", null);
+            mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
             addItemsButton = FindViewById<Button>(Resource.Id.addItems);
             saveButton = FindViewById<Button>(Resource.Id.saveButton);
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
@@ -149,7 +153,7 @@ namespace DTG_Ordering_System
 			{
 				dbr = new DBRepository();
                 string orderId;
-                string branchId = Intent.GetStringExtra("branchId");
+                string branchId = prefs.GetString("branchId", null);
                 if (Intent.GetStringExtra("orderId") == null)
                 {
 					orderId = dbr.insertOrder(deliveryDate.Text, false, branchId);
@@ -164,7 +168,6 @@ namespace DTG_Ordering_System
 
                 Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
 				intent.PutExtra("OrderId", orderId);
-                intent.PutExtra("branchId", branchId);
 				StartActivityForResult(intent, 1);
                 //SetResult(Result.Ok, intent);
                 //Finish();
@@ -184,7 +187,7 @@ namespace DTG_Ordering_System
             {
                 dbr = new DBRepository();
                 string orderId;
-                string branchId = Intent.GetStringExtra("branchId");
+                string branchId = prefs.GetString("branchId", null);
                 if (Intent.GetStringExtra("orderId") == null)
                 {
                     orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
@@ -199,7 +202,6 @@ namespace DTG_Ordering_System
 
                 Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
                 intent.PutExtra("OrderId", orderId);
-                intent.PutExtra("branchId", branchId);
                 StartActivityForResult(intent, 1);
                 
                 items.Clear();
