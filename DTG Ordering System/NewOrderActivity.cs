@@ -319,7 +319,7 @@ namespace DTG_Ordering_System
                                 //tempCategory.Items.ToList().Find(item => item.Id == i.Id).Quantity += i.Quantity;
                                 //items.Find(item => item.Id == i.Id).Quantity += i.Quantity;           
                                 tempCategory.Items.Add(i);
-                                //items.Add(i);
+                                items.Add(i);
                             }
                         }
                     }
