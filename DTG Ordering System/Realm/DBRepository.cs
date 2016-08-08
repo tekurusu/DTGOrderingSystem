@@ -81,6 +81,19 @@ namespace DTG_Ordering_System
 			return items;         
 		}
 
+        public List<Account> getAllAccounts()
+        {
+            realm = Realm.GetInstance(config);
+            var allAccounts = realm.All<Account>();
+            List<Account> accounts = new List<Account>();
+            //String[] accounts;
+            foreach(var acc in allAccounts)
+            {
+                accounts.Add(acc);
+            }
+            return accounts;
+        }
+
 		public List<Category> getAllCategories()
 		{
 			realm = Realm.GetInstance(config);
@@ -136,7 +149,7 @@ namespace DTG_Ordering_System
 			}
 		}
 
-		public string insertOrder(string deliveryDate, bool hasSent)
+		public string insertOrder(string deliveryDate, bool hasSent, string branchId)
 		{
 			realm = Realm.GetInstance(config);
 
@@ -144,7 +157,7 @@ namespace DTG_Ordering_System
 			{
 				var order = realm.CreateObject<Order>();
 				string UUID = Guid.NewGuid().ToString();
-
+                order.BranchId = branchId;
 				order.Id = UUID;
 				order.DeliveryDate = deliveryDate;
 				order.HasSent = hasSent;
@@ -154,6 +167,20 @@ namespace DTG_Ordering_System
 				return order.Id;
 			}
 		}
+
+        public void insertAccount(string username, string password)
+        {
+            realm = Realm.GetInstance(config);
+            using (var transaction = realm.BeginWrite())
+            {
+                var account = realm.CreateObject<Account>();
+                string UUID = Guid.NewGuid().ToString();
+                account.BranchId = UUID;
+                account.Branch = username;
+                account.Password = password;
+                transaction.Commit();
+            }
+        }
 
 		public void updateOrder(string orderId, string deliveryDate, bool hasSent)
 		{
@@ -169,7 +196,18 @@ namespace DTG_Ordering_System
 			}
 		}
 
-		public Order getOrder(string orderId)
+
+        public int authenticate(string branchName, string password)
+        {
+
+            return Realm.GetInstance(config).All<Account>().Where(a => a.Branch == branchName).Where(a => a.Password == password).Count();
+            
+            
+        }
+
+        //public string getBranchId(string )
+
+        public Order getOrder(string orderId)
 		{
 			return Realm.GetInstance(config).All<Order>().Where(o => o.Id == orderId).First();
 		}
@@ -188,11 +226,11 @@ namespace DTG_Ordering_System
 			return sortedOrderedItems.ToList();
         }
 
-        public List<Order> getAllOrders()
+        public List<Order> getAllOrders(string branchId)
         {
             realm = Realm.GetInstance(config);
 
-			var allOrders = realm.All<Order>();
+            var allOrders = realm.All<Order>().Where(o => o.BranchId == branchId);
             List<Order> orders = new List<Order>();
 
             foreach (Order o in allOrders)
@@ -271,11 +309,24 @@ namespace DTG_Ordering_System
 			realm.Close();
 		}
 
+
+        //public void addAcc()
+        //{
+        //    deleteDB();
+        //    createDB();
+            
+
+        //}
+
         public void syncDB() //temporary load of database files :))
         {
             deleteDB();
 			createDB();
 
+            insertAccount("DTG Galleria", "ateneo");
+            insertAccount("DTG Megamall", "lasalle");
+            insertAccount("DTG MOA", "college");
+            
 			string ingredients = insertCategory("A. INGREDIENTS");
 			string drinks = insertCategory("B. DRINKS & JUICES");
 			string dining = insertCategory("C. DINING SUPPLIES");

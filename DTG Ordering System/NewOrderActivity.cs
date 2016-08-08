@@ -30,13 +30,13 @@ namespace DTG_Ordering_System
         private DateTime dateHolder;
         private bool changeIsComing;
         DBRepository dbr = new DBRepository();
-
+        private string branchId;
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.newOrder);
-
+            branchId = Intent.GetStringExtra("branchId");
 			mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
             addItemsButton = FindViewById<Button>(Resource.Id.addItems);
             saveButton = FindViewById<Button>(Resource.Id.saveButton);
@@ -149,10 +149,10 @@ namespace DTG_Ordering_System
 			{
 				dbr = new DBRepository();
                 string orderId;
-
+                string branchId = Intent.GetStringExtra("branchId");
                 if (Intent.GetStringExtra("orderId") == null)
                 {
-					orderId = dbr.insertOrder(deliveryDate.Text, false);
+					orderId = dbr.insertOrder(deliveryDate.Text, false, branchId);
                     dbr.insertOrderedItems(items, orderId, addedQuantities);
                 }
                 else
@@ -164,9 +164,12 @@ namespace DTG_Ordering_System
 
                 Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
 				intent.PutExtra("OrderId", orderId);
+                intent.PutExtra("branchId", branchId);
 				StartActivityForResult(intent, 1);
+                //SetResult(Result.Ok, intent);
+                //Finish();
 
-				items.Clear();
+                items.Clear();
 				adapter.NotifyDataSetChanged();
 			});
 			callDialog.SetNegativeButton("Cancel", delegate { });
@@ -175,35 +178,36 @@ namespace DTG_Ordering_System
 
 		void SendButton_OnClick(object sender, EventArgs e)
 		{
-			var callDialog = new AlertDialog.Builder(this);
-			callDialog.SetMessage("Are you sure you want to send this order?");
-			callDialog.SetNeutralButton("OK", delegate
-			{
-				dbr = new DBRepository();
-				string orderId;
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Are you sure you want to send this order?");
+            callDialog.SetNeutralButton("OK", delegate
+            {
+                dbr = new DBRepository();
+                string orderId;
+                string branchId = Intent.GetStringExtra("branchId");
+                if (Intent.GetStringExtra("orderId") == null)
+                {
+                    orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
+                    dbr.insertOrderedItems(items, orderId, addedQuantities);
+                }
+                else
+                {
+                    orderId = Intent.GetStringExtra("orderId");
+                    dbr.updateOrder(orderId, deliveryDate.Text, true);
+                    dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
+                }
 
-				if (Intent.GetStringExtra("orderId") == null)
-				{
-					orderId = dbr.insertOrder(deliveryDate.Text, true);
-					dbr.insertOrderedItems(items, orderId, addedQuantities);
-				}
-				else
-				{
-					orderId = Intent.GetStringExtra("orderId");
-					dbr.updateOrder(orderId, deliveryDate.Text, true);
-					dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
-				}
-
-				Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-				intent.PutExtra("OrderId", orderId);
+                Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+                intent.PutExtra("OrderId", orderId);
+                intent.PutExtra("branchId", branchId);
                 StartActivityForResult(intent, 1);
-
-				items.Clear();
-				adapter.NotifyDataSetChanged();
-			});
-			callDialog.SetNegativeButton("Cancel", delegate { });
-			callDialog.Show();
-		}
+                
+                items.Clear();
+                adapter.NotifyDataSetChanged();
+            });
+            callDialog.SetNegativeButton("Cancel", delegate { });
+            callDialog.Show();
+        }
 
         void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
         {

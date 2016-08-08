@@ -10,5 +10,6 @@ namespace DTG_Ordering_System
         public string DeliveryDate { get; set; }
         public bool HasSent { get; set; }
         public RealmList<OrderedItem> OrderedItems { get; }
+        public string BranchId { get; set; }
     }
 }

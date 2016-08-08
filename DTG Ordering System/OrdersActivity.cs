@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace DTG_Ordering_System
 {
-	[Activity(Label = "My Orders", MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity(Label = "My Orders", Icon = "@drawable/icon")]
 	public class OrdersActivity : Activity
     {
         private ListView mListView;
@@ -22,14 +22,15 @@ namespace DTG_Ordering_System
         private Button syncButton;
         private OrderAdapter adapter;
         DBRepository dbr = new DBRepository();
+        private string branchId;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-
-            SetContentView(Resource.Layout.orderList);
             
-            orders = dbr.getAllOrders();
+            SetContentView(Resource.Layout.orderList);
+            branchId = Intent.GetStringExtra("branchId");
+            orders = dbr.getAllOrders(branchId);
 			mListView = FindViewById<ListView>(Resource.Id.orderListView);
             mListView.Clickable = true;
             addButton = FindViewById<Button>(Resource.Id.orderAdd);
@@ -45,6 +46,7 @@ namespace DTG_Ordering_System
                     Intent intent = new Intent(this, typeof(NewOrderActivity));
                     intent.PutExtra("orderId", orders[e.Position].Id);
 					intent.PutExtra("hasSent", orders[e.Position].HasSent);
+                    intent.PutExtra("branchId", branchId);
                     StartActivityForResult(intent, 0);
                 };
             }
@@ -53,8 +55,10 @@ namespace DTG_Ordering_System
 
 			addButton.Click += delegate
             {
-				Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
-				StartActivity(intent);
+                //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
+                Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
+                intent.PutExtra("branchId", branchId);
+                StartActivity(intent);
             };
 
 			syncButton.Click += SyncButton_OnClick;
@@ -66,43 +70,49 @@ namespace DTG_Ordering_System
 
             try
             {
-                var orderId = data.GetStringExtra("orderId");
+
+                var orderId = data.GetStringExtra("OrderId");
                 orders.Add(dbr.getOrder(orderId));
                 adapter.NotifyDataSetChanged();
+                
+
+
             }
             catch { }
         }
 
 		void SyncButton_OnClick(object sender, EventArgs e)
 		{
-			var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
-			new Thread(new ThreadStart(delegate
-			{
-				dbr.syncDB();
-				//hide progress dialogue
-				RunOnUiThread(() => progressDialog.Hide());
-			})).Start();
+            Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
+			//var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
+			//new Thread(new ThreadStart(delegate
+			//{
+			//	dbr.syncDB();
+			//	//hide progress dialogue
+			//	RunOnUiThread(() => progressDialog.Hide());
+			//})).Start();
 
-			orders.Clear();
-			adapter.NotifyDataSetChanged();
+			//orders.Clear();
+			//adapter.NotifyDataSetChanged();
 		}
 
 		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
 		{
 			if (orders[e.Position].HasSent == false)
 			{
-				var callDialog = new AlertDialog.Builder(this);
-				callDialog.SetMessage("Delete " + orders[e.Position].DeliveryDate + "?");
-				callDialog.SetNeutralButton("Delete", delegate
-				{
-					DBRepository dbr = new DBRepository();
-					dbr.deleteOrder(orders[e.Position].Id);
-					orders.RemoveAt(e.Position);
-					adapter.NotifyDataSetChanged();
-				});
-				callDialog.SetNegativeButton("Cancel", delegate { });
-				callDialog.Show();
-			}
+                //Toast.MakeText(this, orders[e.Position].BranchId.ToString(), ToastLength.Long).Show();
+                var callDialog = new AlertDialog.Builder(this);
+                callDialog.SetMessage("Delete " + orders[e.Position].DeliveryDate + "?");
+                callDialog.SetNeutralButton("Delete", delegate
+                {
+                    DBRepository dbr = new DBRepository();
+                    dbr.deleteOrder(orders[e.Position].Id);
+                    orders.RemoveAt(e.Position);
+                    adapter.NotifyDataSetChanged();
+                });
+                callDialog.SetNegativeButton("Cancel", delegate { });
+                callDialog.Show();
+            }
 			else
 			{
 				var callDialog = new AlertDialog.Builder(this);
