@@ -4,13 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:text="DTG Ordering System"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
-    <TextView
-        android:text="Username"
+        android:text="DTG Branch"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +15,7 @@
         android:id="@+id/userSpinner" />
     <TextView
         android:text="Password"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView3" />
@@ -36,7 +30,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/loginButton" />
     <Button
-        android:text="Sync"
+        android:text="Reload DB"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/syncButton" />

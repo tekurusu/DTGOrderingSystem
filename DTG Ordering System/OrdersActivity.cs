@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Newtonsoft.Json;
+using Android.Preferences;
 
 namespace DTG_Ordering_System
 {
@@ -29,7 +30,11 @@ namespace DTG_Ordering_System
             base.OnCreate(bundle);
             
             SetContentView(Resource.Layout.orderList);
-            branchId = Intent.GetStringExtra("branchId");
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            //branchId = Intent.GetStringExtra("branchId");
+            branchId = prefs.GetString("branchId", null);
+            this.Title = dbr.getBranchName(branchId) + " Orders";
+
             orders = dbr.getAllOrders(branchId);
 			mListView = FindViewById<ListView>(Resource.Id.orderListView);
             mListView.Clickable = true;
@@ -46,7 +51,6 @@ namespace DTG_Ordering_System
                     Intent intent = new Intent(this, typeof(NewOrderActivity));
                     intent.PutExtra("orderId", orders[e.Position].Id);
 					intent.PutExtra("hasSent", orders[e.Position].HasSent);
-                    intent.PutExtra("branchId", branchId);
                     StartActivityForResult(intent, 0);
                 };
             }
@@ -57,7 +61,6 @@ namespace DTG_Ordering_System
             {
                 //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
                 Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
-                intent.PutExtra("branchId", branchId);
                 StartActivity(intent);
             };
 
@@ -82,19 +85,33 @@ namespace DTG_Ordering_System
         }
 
 		void SyncButton_OnClick(object sender, EventArgs e)
-		{
-            Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
-			//var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
-			//new Thread(new ThreadStart(delegate
-			//{
-			//	dbr.syncDB();
-			//	//hide progress dialogue
-			//	RunOnUiThread(() => progressDialog.Hide());
-			//})).Start();
+		{          
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Are you sure you want to logout?");
+            callDialog.SetNeutralButton("Yes", delegate
+            {
+                ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+                ISharedPreferencesEditor editor = prefs.Edit();
+                editor.Clear();
+                editor.Apply();
 
-			//orders.Clear();
-			//adapter.NotifyDataSetChanged();
-		}
+                Intent intent = new Intent(ApplicationContext, typeof(LoginActivity));
+                StartActivityForResult(intent, 1);
+            });
+            callDialog.SetNegativeButton("No", delegate { });
+            callDialog.Show();
+            //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
+            //var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
+            //new Thread(new ThreadStart(delegate
+            //{
+            //	dbr.syncDB();
+            //	//hide progress dialogue
+            //	RunOnUiThread(() => progressDialog.Hide());
+            //})).Start();
+
+            //orders.Clear();
+            //adapter.NotifyDataSetChanged();
+        }
 
 		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
 		{
