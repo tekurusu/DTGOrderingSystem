@@ -12,7 +12,7 @@ using Android.Widget;
 
 namespace DTG_Ordering_System
 {
-    [Activity(Label = "Log In", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "Log In", Icon = "@drawable/icon")]
     public class LoginActivity : Activity
     {
         private Button loginButton;
