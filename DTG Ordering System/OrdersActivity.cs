@@ -53,23 +53,11 @@ namespace DTG_Ordering_System
 
 			addButton.Click += delegate
             {
-                Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
-                StartActivity(intent);
+				Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
+				StartActivity(intent);
             };
 
-            syncButton.Click += (object sender, EventArgs e) =>
-            { 
-				var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
-				new Thread(new ThreadStart(delegate
-				{
-					dbr.syncDB();
-					//hide progress dialogue
-					RunOnUiThread(() => progressDialog.Hide());
-				})).Start();
-
-				orders.Clear();
-				adapter.NotifyDataSetChanged();
-			};
+			syncButton.Click += SyncButton_OnClick;
         }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
@@ -80,11 +68,24 @@ namespace DTG_Ordering_System
             {
                 var orderId = data.GetStringExtra("orderId");
                 orders.Add(dbr.getOrder(orderId));
-
                 adapter.NotifyDataSetChanged();
             }
             catch { }
         }
+
+		void SyncButton_OnClick(object sender, EventArgs e)
+		{
+			var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
+			new Thread(new ThreadStart(delegate
+			{
+				dbr.syncDB();
+				//hide progress dialogue
+				RunOnUiThread(() => progressDialog.Hide());
+			})).Start();
+
+			orders.Clear();
+			adapter.NotifyDataSetChanged();
+		}
 
 		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
 		{

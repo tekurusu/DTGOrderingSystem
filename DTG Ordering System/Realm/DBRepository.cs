@@ -182,7 +182,10 @@ namespace DTG_Ordering_System
             {
                 orderedItems.Add(oi);
             }
-            return orderedItems;
+
+			var sortedOrderedItems = orderedItems.OrderBy(oi => getItem(oi.ItemId).Name);
+
+			return sortedOrderedItems.ToList();
         }
 
         public List<Order> getAllOrders()
@@ -197,7 +200,9 @@ namespace DTG_Ordering_System
                 orders.Add(o);
             }
 
-			return orders;
+			var sortedOrders = orders.OrderByDescending(o => DateTime.Parse(o.DeliveryDate)).OrderBy(o => o.HasSent.ToString());
+
+			return sortedOrders.ToList();
         }
 
 		public void deleteOrderedItem(string orderId, string itemId)

@@ -37,7 +37,7 @@ namespace DTG_Ordering_System
 
             SetContentView(Resource.Layout.newOrder);
 
-            mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
+			mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
             addItemsButton = FindViewById<Button>(Resource.Id.addItems);
             saveButton = FindViewById<Button>(Resource.Id.saveButton);
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
@@ -324,10 +324,11 @@ namespace DTG_Ordering_System
                         }
                     }
 
+					addedCategories.Sort((x, y) => x.Name.CompareTo(y.Name));
                     adapter.NotifyDataSetChanged();
                     changeIsComing = true;
                 }
-            }			
+            }
         }
 
         public override void OnBackPressed()
