@@ -122,6 +122,7 @@ namespace DTG_Ordering_System
                 DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
                 {
                     deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                    dateHolder = time;
                     if (items.Count != 0)
                     {
                         saveButton.Enabled = true;
