@@ -30,6 +30,7 @@ namespace DTG_Ordering_System
             base.OnCreate(bundle);
             
             SetContentView(Resource.Layout.orderList);
+
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
             //branchId = Intent.GetStringExtra("branchId");
             branchId = prefs.GetString("branchId", null);
