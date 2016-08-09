@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using Newtonsoft.Json;
 using Android.Preferences;
+using System.ServiceModel;
 
 namespace DTG_Ordering_System
 {
@@ -33,6 +34,10 @@ namespace DTG_Ordering_System
         DBRepository dbr = new DBRepository();
         private string branchId;
         ISharedPreferences prefs;
+
+        public static readonly EndpointAddress EndPoint = new EndpointAddress("http://192.168.1.7:61606/Service1.svc");
+        private Service1Client _client;
+        
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -181,34 +186,38 @@ namespace DTG_Ordering_System
 
 		void SendButton_OnClick(object sender, EventArgs e)
 		{
-            var callDialog = new AlertDialog.Builder(this);
-            callDialog.SetMessage("Are you sure you want to send this order?");
-            callDialog.SetNeutralButton("OK", delegate
-            {
-                dbr = new DBRepository();
-                string orderId;
-                string branchId = prefs.GetString("branchId", null);
-                if (Intent.GetStringExtra("orderId") == null)
-                {
-                    orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
-                    dbr.insertOrderedItems(items, orderId, addedQuantities);
-                }
-                else
-                {
-                    orderId = Intent.GetStringExtra("orderId");
-                    dbr.updateOrder(orderId, deliveryDate.Text, true);
-                    dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
-                }
+            //var callDialog = new AlertDialog.Builder(this);
+            //callDialog.SetMessage("Are you sure you want to send this order?");
+            //callDialog.SetNeutralButton("OK", delegate
+            //{
+            //    dbr = new DBRepository();
+            //    string orderId;
+            //    string branchId = prefs.GetString("branchId", null);
+            //    if (Intent.GetStringExtra("orderId") == null)
+            //    {
+            //        orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
+            //        dbr.insertOrderedItems(items, orderId, addedQuantities);
+            //    }
+            //    else
+            //    {
+            //        orderId = Intent.GetStringExtra("orderId");
+            //        dbr.updateOrder(orderId, deliveryDate.Text, true);
+            //        dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
+            //    }
 
-                Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-                intent.PutExtra("OrderId", orderId);
-                StartActivityForResult(intent, 1);
-                
-                items.Clear();
-                adapter.NotifyDataSetChanged();
-            });
-            callDialog.SetNegativeButton("Cancel", delegate { });
-            callDialog.Show();
+            //    Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+            //    intent.PutExtra("OrderId", orderId);
+            //    StartActivityForResult(intent, 1);
+
+            //    items.Clear();
+            //    adapter.NotifyDataSetChanged();
+            //});
+            //callDialog.SetNegativeButton("Cancel", delegate { });
+            //callDialog.Show();
+
+            InitializeService1Client();
+            _client.sendOrderAsync(Convert.ToDateTime(deliveryDate.Text));
+            
         }
 
         void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
@@ -354,6 +363,48 @@ namespace DTG_Ordering_System
             {
                 base.OnBackPressed();
             }    
+        }
+
+        private void InitializeService1Client()
+        {
+            BasicHttpBinding binding = CreateBasicHttp();
+
+            _client = new Service1Client(binding, EndPoint);
+            _client.sendOrderCompleted += _client_sendOrderCompleted;
+        }
+
+        private void _client_sendOrderCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            string msg = null;
+
+            if (e.Error != null)
+            {
+                msg = e.Error.Message;
+            }
+            else if (e.Cancelled)
+            {
+                msg = "Request was cancelled.";
+            }
+            else
+            {
+                msg = "Successfully sent order";
+            }
+            RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
+        }
+
+        private static BasicHttpBinding CreateBasicHttp()
+        {
+            BasicHttpBinding binding = new BasicHttpBinding
+            {
+                Name = "basicHttpBinding",
+                MaxBufferSize = 2147483647,
+                MaxReceivedMessageSize = 2147483647
+            };
+            TimeSpan timeout = new TimeSpan(0, 0, 30);
+            binding.SendTimeout = timeout;
+            binding.OpenTimeout = timeout;
+            binding.ReceiveTimeout = timeout;
+            return binding;
         }
     }
 }
