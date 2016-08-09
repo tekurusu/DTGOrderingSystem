@@ -57,7 +57,7 @@ namespace DTG_Ordering_System
             //code for datepicker
             DateTime now = DateTime.Now.ToLocalTime();
             dateHolder = now;
-            String dateNow = String.Format("{0:dd MMM yy}", now);
+            String dateNow = String.Format("{0:dd MMM yyyy}", now);
             deliveryDate.Text = dateNow;            
 
             addedCategories.Clear();
@@ -84,7 +84,7 @@ namespace DTG_Ordering_System
 				List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
 
 				dateHolder = DateTime.Parse(order.DeliveryDate);
-				deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
+				deliveryDate.Text = String.Format("{0:dd MMM yyyy}", DateTime.Parse(order.DeliveryDate));
 				sendButton.Enabled = true;
 
 				//Toast.MakeText(this, addedQuantities.Count.ToString(), ToastLength.Long).Show();
@@ -130,7 +130,7 @@ namespace DTG_Ordering_System
             {
                 DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
                 {
-                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                    deliveryDate.Text = String.Format("{0:dd MMM yyyy}", time);
                     dateHolder = time;
                     if (items.Count != 0)
                     {
