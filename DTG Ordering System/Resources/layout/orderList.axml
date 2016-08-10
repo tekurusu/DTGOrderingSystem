@@ -56,15 +56,15 @@
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_weight="90"
-        android:divider="@color/gray"
-        android:dividerHeight="0.1dp"
+        android:layout_weight="95"
+        android:divider="@color/lightgray"
+        android:dividerHeight="0.01dp"
         android:layout_height="wrap_content"
         android:id="@+id/orderListView" />
     <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"
-        android:layout_weight="10"
+        android:layout_weight="5"
         android:minHeight="30px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -79,9 +79,9 @@
             android:background="@drawable/button_white"
             android:layout_gravity="center"
             android:layout_weight="50"
-            android:textSize="17dp"
             android:id="@+id/syncButton"
-            android:layout_marginLeft="20dp" />
+            android:layout_marginLeft="20dp"
+            android:padding="5dp" />
         <Button
             android:text="Add"
             android:layout_width="wrap_content"
@@ -89,8 +89,8 @@
             android:background="@drawable/button_olive"
             android:layout_gravity="center"
             android:layout_weight="50"
-            android:textSize="17dp"
             android:id="@+id/orderAdd"
-            android:layout_marginRight="20dp" />
+            android:layout_marginRight="20dp"
+            android:padding="5dp" />
     </LinearLayout>
 </LinearLayout>

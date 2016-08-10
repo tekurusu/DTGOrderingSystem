@@ -71,9 +71,29 @@ public interface IService1
     RBOS_WCF.CompositeType EndGetDataUsingDataContract(System.IAsyncResult result);
     
     [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="http://tempuri.org/IService1/sendOrder", ReplyAction="http://tempuri.org/IService1/sendOrderResponse")]
-    System.IAsyncResult BeginsendOrder(System.DateTime date, System.AsyncCallback callback, object asyncState);
+    System.IAsyncResult BeginsendOrder(string Order, bool replacement, string orderedItems, System.AsyncCallback callback, object asyncState);
     
-    void EndsendOrder(System.IAsyncResult result);
+    string EndsendOrder(System.IAsyncResult result);
+    
+    [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="http://tempuri.org/IService1/copyCategories", ReplyAction="http://tempuri.org/IService1/copyCategoriesResponse")]
+    System.IAsyncResult BegincopyCategories(string category, System.AsyncCallback callback, object asyncState);
+    
+    void EndcopyCategories(System.IAsyncResult result);
+    
+    [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="http://tempuri.org/IService1/copyItems", ReplyAction="http://tempuri.org/IService1/copyItemsResponse")]
+    System.IAsyncResult BegincopyItems(string items, System.AsyncCallback callback, object asyncState);
+    
+    void EndcopyItems(System.IAsyncResult result);
+    
+    [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="http://tempuri.org/IService1/getAllItems", ReplyAction="http://tempuri.org/IService1/getAllItemsResponse")]
+    System.IAsyncResult BegingetAllItems(System.AsyncCallback callback, object asyncState);
+    
+    string EndgetAllItems(System.IAsyncResult result);
+    
+    [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="http://tempuri.org/IService1/getAllCategories", ReplyAction="http://tempuri.org/IService1/getAllCategoriesResponse")]
+    System.IAsyncResult BegingetAllCategories(System.AsyncCallback callback, object asyncState);
+    
+    string EndgetAllCategories(System.IAsyncResult result);
 }
 
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -129,6 +149,75 @@ public partial class GetDataUsingDataContractCompletedEventArgs : System.Compone
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+public partial class sendOrderCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+{
+    
+    private object[] results;
+    
+    public sendOrderCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+            base(exception, cancelled, userState)
+    {
+        this.results = results;
+    }
+    
+    public string Result
+    {
+        get
+        {
+            base.RaiseExceptionIfNecessary();
+            return ((string)(this.results[0]));
+        }
+    }
+}
+
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+public partial class getAllItemsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+{
+    
+    private object[] results;
+    
+    public getAllItemsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+            base(exception, cancelled, userState)
+    {
+        this.results = results;
+    }
+    
+    public string Result
+    {
+        get
+        {
+            base.RaiseExceptionIfNecessary();
+            return ((string)(this.results[0]));
+        }
+    }
+}
+
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+public partial class getAllCategoriesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+{
+    
+    private object[] results;
+    
+    public getAllCategoriesCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+            base(exception, cancelled, userState)
+    {
+        this.results = results;
+    }
+    
+    public string Result
+    {
+        get
+        {
+            base.RaiseExceptionIfNecessary();
+            return ((string)(this.results[0]));
+        }
+    }
+}
+
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 public partial class Service1Client : System.ServiceModel.ClientBase<IService1>, IService1
 {
     
@@ -149,6 +238,30 @@ public partial class Service1Client : System.ServiceModel.ClientBase<IService1>,
     private EndOperationDelegate onEndsendOrderDelegate;
     
     private System.Threading.SendOrPostCallback onsendOrderCompletedDelegate;
+    
+    private BeginOperationDelegate onBegincopyCategoriesDelegate;
+    
+    private EndOperationDelegate onEndcopyCategoriesDelegate;
+    
+    private System.Threading.SendOrPostCallback oncopyCategoriesCompletedDelegate;
+    
+    private BeginOperationDelegate onBegincopyItemsDelegate;
+    
+    private EndOperationDelegate onEndcopyItemsDelegate;
+    
+    private System.Threading.SendOrPostCallback oncopyItemsCompletedDelegate;
+    
+    private BeginOperationDelegate onBegingetAllItemsDelegate;
+    
+    private EndOperationDelegate onEndgetAllItemsDelegate;
+    
+    private System.Threading.SendOrPostCallback ongetAllItemsCompletedDelegate;
+    
+    private BeginOperationDelegate onBegingetAllCategoriesDelegate;
+    
+    private EndOperationDelegate onEndgetAllCategoriesDelegate;
+    
+    private System.Threading.SendOrPostCallback ongetAllCategoriesCompletedDelegate;
     
     private BeginOperationDelegate onBeginOpenDelegate;
     
@@ -219,7 +332,15 @@ public partial class Service1Client : System.ServiceModel.ClientBase<IService1>,
     
     public event System.EventHandler<GetDataUsingDataContractCompletedEventArgs> GetDataUsingDataContractCompleted;
     
-    public event System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> sendOrderCompleted;
+    public event System.EventHandler<sendOrderCompletedEventArgs> sendOrderCompleted;
+    
+    public event System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> copyCategoriesCompleted;
+    
+    public event System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> copyItemsCompleted;
+    
+    public event System.EventHandler<getAllItemsCompletedEventArgs> getAllItemsCompleted;
+    
+    public event System.EventHandler<getAllCategoriesCompletedEventArgs> getAllCategoriesCompleted;
     
     public event System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> OpenCompleted;
     
@@ -340,27 +461,30 @@ public partial class Service1Client : System.ServiceModel.ClientBase<IService1>,
     }
     
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    System.IAsyncResult IService1.BeginsendOrder(System.DateTime date, System.AsyncCallback callback, object asyncState)
+    System.IAsyncResult IService1.BeginsendOrder(string Order, bool replacement, string orderedItems, System.AsyncCallback callback, object asyncState)
     {
-        return base.Channel.BeginsendOrder(date, callback, asyncState);
+        return base.Channel.BeginsendOrder(Order, replacement, orderedItems, callback, asyncState);
     }
     
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    void IService1.EndsendOrder(System.IAsyncResult result)
+    string IService1.EndsendOrder(System.IAsyncResult result)
     {
-        base.Channel.EndsendOrder(result);
+        return base.Channel.EndsendOrder(result);
     }
     
     private System.IAsyncResult OnBeginsendOrder(object[] inValues, System.AsyncCallback callback, object asyncState)
     {
-        System.DateTime date = ((System.DateTime)(inValues[0]));
-        return ((IService1)(this)).BeginsendOrder(date, callback, asyncState);
+        string Order = ((string)(inValues[0]));
+        bool replacement = ((bool)(inValues[1]));
+        string orderedItems = ((string)(inValues[2]));
+        return ((IService1)(this)).BeginsendOrder(Order, replacement, orderedItems, callback, asyncState);
     }
     
     private object[] OnEndsendOrder(System.IAsyncResult result)
     {
-        ((IService1)(this)).EndsendOrder(result);
-        return null;
+        string retVal = ((IService1)(this)).EndsendOrder(result);
+        return new object[] {
+                retVal};
     }
     
     private void OnsendOrderCompleted(object state)
@@ -368,16 +492,16 @@ public partial class Service1Client : System.ServiceModel.ClientBase<IService1>,
         if ((this.sendOrderCompleted != null))
         {
             InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-            this.sendOrderCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
+            this.sendOrderCompleted(this, new sendOrderCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
         }
     }
     
-    public void sendOrderAsync(System.DateTime date)
+    public void sendOrderAsync(string Order, bool replacement, string orderedItems)
     {
-        this.sendOrderAsync(date, null);
+        this.sendOrderAsync(Order, replacement, orderedItems, null);
     }
     
-    public void sendOrderAsync(System.DateTime date, object userState)
+    public void sendOrderAsync(string Order, bool replacement, string orderedItems, object userState)
     {
         if ((this.onBeginsendOrderDelegate == null))
         {
@@ -392,7 +516,231 @@ public partial class Service1Client : System.ServiceModel.ClientBase<IService1>,
             this.onsendOrderCompletedDelegate = new System.Threading.SendOrPostCallback(this.OnsendOrderCompleted);
         }
         base.InvokeAsync(this.onBeginsendOrderDelegate, new object[] {
-                    date}, this.onEndsendOrderDelegate, this.onsendOrderCompletedDelegate, userState);
+                    Order,
+                    replacement,
+                    orderedItems}, this.onEndsendOrderDelegate, this.onsendOrderCompletedDelegate, userState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    System.IAsyncResult IService1.BegincopyCategories(string category, System.AsyncCallback callback, object asyncState)
+    {
+        return base.Channel.BegincopyCategories(category, callback, asyncState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    void IService1.EndcopyCategories(System.IAsyncResult result)
+    {
+        base.Channel.EndcopyCategories(result);
+    }
+    
+    private System.IAsyncResult OnBegincopyCategories(object[] inValues, System.AsyncCallback callback, object asyncState)
+    {
+        string category = ((string)(inValues[0]));
+        return ((IService1)(this)).BegincopyCategories(category, callback, asyncState);
+    }
+    
+    private object[] OnEndcopyCategories(System.IAsyncResult result)
+    {
+        ((IService1)(this)).EndcopyCategories(result);
+        return null;
+    }
+    
+    private void OncopyCategoriesCompleted(object state)
+    {
+        if ((this.copyCategoriesCompleted != null))
+        {
+            InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+            this.copyCategoriesCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
+        }
+    }
+    
+    public void copyCategoriesAsync(string category)
+    {
+        this.copyCategoriesAsync(category, null);
+    }
+    
+    public void copyCategoriesAsync(string category, object userState)
+    {
+        if ((this.onBegincopyCategoriesDelegate == null))
+        {
+            this.onBegincopyCategoriesDelegate = new BeginOperationDelegate(this.OnBegincopyCategories);
+        }
+        if ((this.onEndcopyCategoriesDelegate == null))
+        {
+            this.onEndcopyCategoriesDelegate = new EndOperationDelegate(this.OnEndcopyCategories);
+        }
+        if ((this.oncopyCategoriesCompletedDelegate == null))
+        {
+            this.oncopyCategoriesCompletedDelegate = new System.Threading.SendOrPostCallback(this.OncopyCategoriesCompleted);
+        }
+        base.InvokeAsync(this.onBegincopyCategoriesDelegate, new object[] {
+                    category}, this.onEndcopyCategoriesDelegate, this.oncopyCategoriesCompletedDelegate, userState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    System.IAsyncResult IService1.BegincopyItems(string items, System.AsyncCallback callback, object asyncState)
+    {
+        return base.Channel.BegincopyItems(items, callback, asyncState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    void IService1.EndcopyItems(System.IAsyncResult result)
+    {
+        base.Channel.EndcopyItems(result);
+    }
+    
+    private System.IAsyncResult OnBegincopyItems(object[] inValues, System.AsyncCallback callback, object asyncState)
+    {
+        string items = ((string)(inValues[0]));
+        return ((IService1)(this)).BegincopyItems(items, callback, asyncState);
+    }
+    
+    private object[] OnEndcopyItems(System.IAsyncResult result)
+    {
+        ((IService1)(this)).EndcopyItems(result);
+        return null;
+    }
+    
+    private void OncopyItemsCompleted(object state)
+    {
+        if ((this.copyItemsCompleted != null))
+        {
+            InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+            this.copyItemsCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
+        }
+    }
+    
+    public void copyItemsAsync(string items)
+    {
+        this.copyItemsAsync(items, null);
+    }
+    
+    public void copyItemsAsync(string items, object userState)
+    {
+        if ((this.onBegincopyItemsDelegate == null))
+        {
+            this.onBegincopyItemsDelegate = new BeginOperationDelegate(this.OnBegincopyItems);
+        }
+        if ((this.onEndcopyItemsDelegate == null))
+        {
+            this.onEndcopyItemsDelegate = new EndOperationDelegate(this.OnEndcopyItems);
+        }
+        if ((this.oncopyItemsCompletedDelegate == null))
+        {
+            this.oncopyItemsCompletedDelegate = new System.Threading.SendOrPostCallback(this.OncopyItemsCompleted);
+        }
+        base.InvokeAsync(this.onBegincopyItemsDelegate, new object[] {
+                    items}, this.onEndcopyItemsDelegate, this.oncopyItemsCompletedDelegate, userState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    System.IAsyncResult IService1.BegingetAllItems(System.AsyncCallback callback, object asyncState)
+    {
+        return base.Channel.BegingetAllItems(callback, asyncState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    string IService1.EndgetAllItems(System.IAsyncResult result)
+    {
+        return base.Channel.EndgetAllItems(result);
+    }
+    
+    private System.IAsyncResult OnBegingetAllItems(object[] inValues, System.AsyncCallback callback, object asyncState)
+    {
+        return ((IService1)(this)).BegingetAllItems(callback, asyncState);
+    }
+    
+    private object[] OnEndgetAllItems(System.IAsyncResult result)
+    {
+        string retVal = ((IService1)(this)).EndgetAllItems(result);
+        return new object[] {
+                retVal};
+    }
+    
+    private void OngetAllItemsCompleted(object state)
+    {
+        if ((this.getAllItemsCompleted != null))
+        {
+            InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+            this.getAllItemsCompleted(this, new getAllItemsCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
+        }
+    }
+    
+    public void getAllItemsAsync()
+    {
+        this.getAllItemsAsync(null);
+    }
+    
+    public void getAllItemsAsync(object userState)
+    {
+        if ((this.onBegingetAllItemsDelegate == null))
+        {
+            this.onBegingetAllItemsDelegate = new BeginOperationDelegate(this.OnBegingetAllItems);
+        }
+        if ((this.onEndgetAllItemsDelegate == null))
+        {
+            this.onEndgetAllItemsDelegate = new EndOperationDelegate(this.OnEndgetAllItems);
+        }
+        if ((this.ongetAllItemsCompletedDelegate == null))
+        {
+            this.ongetAllItemsCompletedDelegate = new System.Threading.SendOrPostCallback(this.OngetAllItemsCompleted);
+        }
+        base.InvokeAsync(this.onBegingetAllItemsDelegate, null, this.onEndgetAllItemsDelegate, this.ongetAllItemsCompletedDelegate, userState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    System.IAsyncResult IService1.BegingetAllCategories(System.AsyncCallback callback, object asyncState)
+    {
+        return base.Channel.BegingetAllCategories(callback, asyncState);
+    }
+    
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    string IService1.EndgetAllCategories(System.IAsyncResult result)
+    {
+        return base.Channel.EndgetAllCategories(result);
+    }
+    
+    private System.IAsyncResult OnBegingetAllCategories(object[] inValues, System.AsyncCallback callback, object asyncState)
+    {
+        return ((IService1)(this)).BegingetAllCategories(callback, asyncState);
+    }
+    
+    private object[] OnEndgetAllCategories(System.IAsyncResult result)
+    {
+        string retVal = ((IService1)(this)).EndgetAllCategories(result);
+        return new object[] {
+                retVal};
+    }
+    
+    private void OngetAllCategoriesCompleted(object state)
+    {
+        if ((this.getAllCategoriesCompleted != null))
+        {
+            InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+            this.getAllCategoriesCompleted(this, new getAllCategoriesCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
+        }
+    }
+    
+    public void getAllCategoriesAsync()
+    {
+        this.getAllCategoriesAsync(null);
+    }
+    
+    public void getAllCategoriesAsync(object userState)
+    {
+        if ((this.onBegingetAllCategoriesDelegate == null))
+        {
+            this.onBegingetAllCategoriesDelegate = new BeginOperationDelegate(this.OnBegingetAllCategories);
+        }
+        if ((this.onEndgetAllCategoriesDelegate == null))
+        {
+            this.onEndgetAllCategoriesDelegate = new EndOperationDelegate(this.OnEndgetAllCategories);
+        }
+        if ((this.ongetAllCategoriesCompletedDelegate == null))
+        {
+            this.ongetAllCategoriesCompletedDelegate = new System.Threading.SendOrPostCallback(this.OngetAllCategoriesCompleted);
+        }
+        base.InvokeAsync(this.onBegingetAllCategoriesDelegate, null, this.onEndgetAllCategoriesDelegate, this.ongetAllCategoriesCompletedDelegate, userState);
     }
     
     private System.IAsyncResult OnBeginOpen(object[] inValues, System.AsyncCallback callback, object asyncState)
@@ -522,18 +870,77 @@ public partial class Service1Client : System.ServiceModel.ClientBase<IService1>,
             return _result;
         }
         
-        public System.IAsyncResult BeginsendOrder(System.DateTime date, System.AsyncCallback callback, object asyncState)
+        public System.IAsyncResult BeginsendOrder(string Order, bool replacement, string orderedItems, System.AsyncCallback callback, object asyncState)
         {
-            object[] _args = new object[1];
-            _args[0] = date;
+            object[] _args = new object[3];
+            _args[0] = Order;
+            _args[1] = replacement;
+            _args[2] = orderedItems;
             System.IAsyncResult _result = base.BeginInvoke("sendOrder", _args, callback, asyncState);
             return _result;
         }
         
-        public void EndsendOrder(System.IAsyncResult result)
+        public string EndsendOrder(System.IAsyncResult result)
         {
             object[] _args = new object[0];
-            base.EndInvoke("sendOrder", _args, result);
+            string _result = ((string)(base.EndInvoke("sendOrder", _args, result)));
+            return _result;
+        }
+        
+        public System.IAsyncResult BegincopyCategories(string category, System.AsyncCallback callback, object asyncState)
+        {
+            object[] _args = new object[1];
+            _args[0] = category;
+            System.IAsyncResult _result = base.BeginInvoke("copyCategories", _args, callback, asyncState);
+            return _result;
+        }
+        
+        public void EndcopyCategories(System.IAsyncResult result)
+        {
+            object[] _args = new object[0];
+            base.EndInvoke("copyCategories", _args, result);
+        }
+        
+        public System.IAsyncResult BegincopyItems(string items, System.AsyncCallback callback, object asyncState)
+        {
+            object[] _args = new object[1];
+            _args[0] = items;
+            System.IAsyncResult _result = base.BeginInvoke("copyItems", _args, callback, asyncState);
+            return _result;
+        }
+        
+        public void EndcopyItems(System.IAsyncResult result)
+        {
+            object[] _args = new object[0];
+            base.EndInvoke("copyItems", _args, result);
+        }
+        
+        public System.IAsyncResult BegingetAllItems(System.AsyncCallback callback, object asyncState)
+        {
+            object[] _args = new object[0];
+            System.IAsyncResult _result = base.BeginInvoke("getAllItems", _args, callback, asyncState);
+            return _result;
+        }
+        
+        public string EndgetAllItems(System.IAsyncResult result)
+        {
+            object[] _args = new object[0];
+            string _result = ((string)(base.EndInvoke("getAllItems", _args, result)));
+            return _result;
+        }
+        
+        public System.IAsyncResult BegingetAllCategories(System.AsyncCallback callback, object asyncState)
+        {
+            object[] _args = new object[0];
+            System.IAsyncResult _result = base.BeginInvoke("getAllCategories", _args, callback, asyncState);
+            return _result;
+        }
+        
+        public string EndgetAllCategories(System.IAsyncResult result)
+        {
+            object[] _args = new object[0];
+            string _result = ((string)(base.EndInvoke("getAllCategories", _args, result)));
+            return _result;
         }
     }
 }
