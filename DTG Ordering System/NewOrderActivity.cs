@@ -31,6 +31,7 @@ namespace DTG_Ordering_System
 		private Button saveButton;
 		private Button sendButton;
         private Button editDate;
+        private ImageButton backButton2;
         private DateTime dateHolder;
         private bool changeIsComing;
         DBRepository dbr = new DBRepository();
@@ -52,12 +53,13 @@ namespace DTG_Ordering_System
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
             deliveryDate = FindViewById<TextView>(Resource.Id.deliveryDate);
             editDate = FindViewById<Button>(Resource.Id.editDate);
+            backButton2 = FindViewById<ImageButton>(Resource.Id.backButton2);
             changeIsComing = false;
                 
             //code for datepicker
             DateTime now = DateTime.Now.ToLocalTime();
             dateHolder = now;
-            String dateNow = String.Format("{0:dd MMM yy}", now);
+            String dateNow = String.Format("{0:dd MMM yyyy}", now);
             deliveryDate.Text = dateNow;            
 
             addedCategories.Clear();
@@ -75,6 +77,7 @@ namespace DTG_Ordering_System
             mListView.ItemLongClick += DeleteItem_OnLongClick;
             saveButton.Click += SaveButton_OnClick;
             sendButton.Click += SendButton_OnClick;
+            backButton2.Click += BackButton2_Click;
 
             if (Intent.GetStringExtra("orderId") != null)
             {
@@ -84,7 +87,7 @@ namespace DTG_Ordering_System
 				List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
 
 				dateHolder = DateTime.Parse(order.DeliveryDate);
-				deliveryDate.Text = String.Format("{0:dd MMM yy}", DateTime.Parse(order.DeliveryDate));
+				deliveryDate.Text = String.Format("{0:dd MMM yyyy}", DateTime.Parse(order.DeliveryDate));
 				sendButton.Enabled = true;
 
 				//Toast.MakeText(this, addedQuantities.Count.ToString(), ToastLength.Long).Show();
@@ -137,7 +140,7 @@ namespace DTG_Ordering_System
             {
                 DatePickerFragment frag = DatePickerFragment.NewInstance(delegate (DateTime time)
                 {
-                    deliveryDate.Text = String.Format("{0:dd MMM yy}", time);
+                    deliveryDate.Text = String.Format("{0:dd MMM yyyy}", time);
                     dateHolder = time;
                     if (items.Count != 0)
                     {
@@ -157,7 +160,26 @@ namespace DTG_Ordering_System
             };
         }
 
-		void SaveButton_OnClick(object sender, EventArgs e)
+        private void BackButton2_Click(object sender, EventArgs e)
+        {
+            if (changeIsComing)
+            {
+                var callDialog = new AlertDialog.Builder(this);
+                callDialog.SetMessage("Discard changes for this order?");
+                callDialog.SetNeutralButton("Yes", delegate
+                {
+                    base.OnBackPressed();
+                });
+                callDialog.SetNegativeButton("No", delegate { });
+                callDialog.Show();
+            }
+            else
+            {
+                base.OnBackPressed();
+            }
+        }
+
+        void SaveButton_OnClick(object sender, EventArgs e)
 		{
 			var callDialog = new AlertDialog.Builder(this);
 			callDialog.SetMessage("Are you sure you want to save this order as a draft?");

@@ -22,6 +22,7 @@ namespace DTG_Ordering_System
         private static List<Order> orders = new List<Order>();
         private Button addButton;
         private Button syncButton;
+        private ImageButton backButton;
         private OrderAdapter adapter;
         DBRepository dbr = new DBRepository();
         private string branchId;
@@ -32,6 +33,7 @@ namespace DTG_Ordering_System
             base.OnCreate(bundle);
             
             SetContentView(Resource.Layout.orderList);
+
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
             //branchId = Intent.GetStringExtra("branchId");
             branchId = prefs.GetString("branchId", null);
@@ -42,7 +44,8 @@ namespace DTG_Ordering_System
             mListView.Clickable = true;
             addButton = FindViewById<Button>(Resource.Id.orderAdd);
             syncButton = FindViewById<Button>(Resource.Id.syncButton);
-            
+            backButton = FindViewById<ImageButton>(Resource.Id.backButton);
+
             adapter = new OrderAdapter(this, orders, this);
             mListView.Adapter = adapter;
             
@@ -66,7 +69,21 @@ namespace DTG_Ordering_System
                 StartActivity(intent);
             };
 
+            backButton.Click += BackButton_Click;
+
 			syncButton.Click += SyncButton_OnClick;
+        }
+
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Close DTG Ordering System app?");
+            callDialog.SetNeutralButton("Yes", delegate
+            {
+                this.FinishAffinity();
+            });
+            callDialog.SetNegativeButton("No", delegate { });
+            callDialog.Show();
         }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)

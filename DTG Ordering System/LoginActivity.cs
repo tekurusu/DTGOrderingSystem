@@ -29,7 +29,9 @@ namespace DTG_Ordering_System
         protected override void OnCreate(Bundle savedInstanceState)
         {
             dbr = new DBRepository();
+
             base.OnCreate(savedInstanceState);
+            this.RequestWindowFeature(WindowFeatures.NoTitle);
 
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
             branchId = prefs.GetString("branchId", null);
@@ -40,6 +42,9 @@ namespace DTG_Ordering_System
             }
 
             SetContentView(Resource.Layout.loginScreen);
+
+           
+
             loginButton = FindViewById<Button>(Resource.Id.loginButton);
             userSpinner = FindViewById<Spinner>(Resource.Id.userSpinner);
             passwordText = FindViewById<EditText>(Resource.Id.passwordText);

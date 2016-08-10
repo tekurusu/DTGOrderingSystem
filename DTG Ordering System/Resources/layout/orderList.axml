@@ -5,34 +5,88 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px"
+    android:background="#fafafa"
     android:weightSum="100">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/olive"
+        android:id="@+id/linearLayout1"
+        android:padding="5dp">
+        <ImageButton
+            android:src="@drawable/backB"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/olive"
+            android:id="@+id/backButton"
+            android:layout_marginRight="100dp" />
+        <TextView
+            android:text="My Orders"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/textView1" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightgray"
+        android:id="@+id/linearLayout2"
+        android:padding="5dp">
+        <TextView
+            android:text="Delivery Dates"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:textColor="@color/gray"
+            android:layout_height="match_parent"
+            android:id="@+id/textView2" />
+    </LinearLayout>
     <ListView
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_weight="90"
+        android:layout_weight="95"
+        android:divider="@color/lightgray"
+        android:dividerHeight="0.01dp"
         android:layout_height="wrap_content"
         android:id="@+id/orderListView" />
     <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"
-        android:layout_weight="10"
+        android:layout_weight="5"
         android:minHeight="30px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/olive"
         android:weightSum="100"
         android:id="@+id/logOutButton">
         <Button
-            android:text="Logout"
+            android:text="LOGOUT"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/olive"
+            android:background="@drawable/button_white"
+            android:layout_gravity="center"
             android:layout_weight="50"
-            android:layout_height="match_parent"
-            android:id="@+id/syncButton" />
+            android:id="@+id/syncButton"
+            android:layout_marginLeft="20dp"
+            android:padding="5dp" />
         <Button
             android:text="Add"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_olive"
+            android:layout_gravity="center"
             android:layout_weight="50"
-            android:layout_height="match_parent"
-            android:id="@+id/orderAdd" />
+            android:id="@+id/orderAdd"
+            android:layout_marginRight="20dp"
+            android:padding="5dp" />
     </LinearLayout>
 </LinearLayout>

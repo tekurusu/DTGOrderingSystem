@@ -105,7 +105,6 @@ namespace DTG_Ordering_System
 
             //set header text
             TextView categoryHeader = row.FindViewById<TextView>(Resource.Id.lblListHeader);
-            categoryHeader.SetTextColor(Color.LightSeaGreen);
             categoryHeader.Text = headers[groupPosition].Name;
 
             return row;
