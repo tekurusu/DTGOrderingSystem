@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using Newtonsoft.Json;
 using Android.Preferences;
+using System.ServiceModel;
 
 namespace DTG_Ordering_System
 {
@@ -24,6 +25,7 @@ namespace DTG_Ordering_System
         private OrderAdapter adapter;
         DBRepository dbr = new DBRepository();
         private string branchId;
+        private Service1Client _client;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -85,7 +87,7 @@ namespace DTG_Ordering_System
         }
 
 		void SyncButton_OnClick(object sender, EventArgs e)
-		{          
+		{
             var callDialog = new AlertDialog.Builder(this);
             callDialog.SetMessage("Are you sure you want to logout?");
             callDialog.SetNeutralButton("Yes", delegate
@@ -101,19 +103,82 @@ namespace DTG_Ordering_System
             callDialog.SetNegativeButton("No", delegate { });
             callDialog.Show();
             //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
+
             //var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
             //new Thread(new ThreadStart(delegate
             //{
-            //	dbr.syncDB();
-            //	//hide progress dialogue
-            //	RunOnUiThread(() => progressDialog.Hide());
+            //    dbr.syncDB();
+            //    //hide progress dialogue
+            //    RunOnUiThread(() => progressDialog.Hide());
             //})).Start();
 
             //orders.Clear();
             //adapter.NotifyDataSetChanged();
         }
 
-		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
+        //private void InitializeService1Client()
+        //{
+        //    BasicHttpBinding binding = CreateBasicHttp();
+
+        //    _client = new Service1Client(binding, dbr.getIP());
+        //    _client.getAllItemsCompleted += _client_getAllItemsCompleted;
+        //    _client.getAllCategoriesCompleted += _client_getAllICategoriesCompleted;
+        //}
+
+        //private void _client_getAllICategoriesCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        //{
+        //    string msg = null;
+
+        //    if (e.Error != null)
+        //    {
+        //        msg = e.Error.Message;
+        //    }
+        //    else if (e.Cancelled)
+        //    {
+        //        msg = "Request was cancelled.";
+        //    }
+        //    else
+        //    {
+        //        msg = "All categories synced.";
+        //    }
+        //    RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
+        //}
+
+        //private void _client_getAllItemsCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        //{
+        //    string msg = null;
+
+        //    if (e.Error != null)
+        //    {
+        //        msg = e.Error.Message;
+        //    }
+        //    else if (e.Cancelled)
+        //    {
+        //        msg = "Request was cancelled.";
+        //    }
+        //    else
+        //    {
+        //        msg = "All items synced.";
+        //    }
+        //    RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
+        //}
+
+        //private static BasicHttpBinding CreateBasicHttp()
+        //{
+        //    BasicHttpBinding binding = new BasicHttpBinding
+        //    {
+        //        Name = "basicHttpBinding",
+        //        MaxBufferSize = 2147483647,
+        //        MaxReceivedMessageSize = 2147483647
+        //    };
+        //    TimeSpan timeout = new TimeSpan(0, 0, 30);
+        //    binding.SendTimeout = timeout;
+        //    binding.OpenTimeout = timeout;
+        //    binding.ReceiveTimeout = timeout;
+        //    return binding;
+        //}
+
+        void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
 		{
 			if (orders[e.Position].HasSent == false)
 			{

@@ -12,6 +12,8 @@ using Android.Widget;
 using Newtonsoft.Json;
 using Android.Preferences;
 using System.ServiceModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DTG_Ordering_System
 {
@@ -34,10 +36,8 @@ namespace DTG_Ordering_System
         DBRepository dbr = new DBRepository();
         private string branchId;
         ISharedPreferences prefs;
-
-        public static readonly EndpointAddress EndPoint = new EndpointAddress("http://192.168.1.7:61606/Service1.svc");
-        private Service1Client _client;
         
+        private Service1Client _client;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -110,20 +110,27 @@ namespace DTG_Ordering_System
 
 				adapter.NotifyDataSetChanged();
 
-				if ((Intent.GetBooleanExtra("hasSent", false) == false) || (Intent.GetBooleanExtra("replacement", false) == true))
-				{
-					editDate.Visibility = ViewStates.Visible;
-					saveButton.Visibility = ViewStates.Visible;
-					sendButton.Visibility = ViewStates.Visible;
-					addItemsButton.Visibility = ViewStates.Visible;
-				}
-				else
-				{
-					editDate.Visibility = ViewStates.Gone;
-					saveButton.Visibility = ViewStates.Gone;
-					sendButton.Visibility = ViewStates.Gone;
-					addItemsButton.Visibility = ViewStates.Gone;
-				}
+                if (Intent.GetBooleanExtra("hasSent", false) == false)
+                {
+                    editDate.Visibility = ViewStates.Visible;
+                    saveButton.Visibility = ViewStates.Visible;
+                    sendButton.Visibility = ViewStates.Visible;
+                    addItemsButton.Visibility = ViewStates.Visible;
+                }
+                else if (Intent.GetBooleanExtra("replacement", false) == true)
+                {
+                    editDate.Visibility = ViewStates.Visible;
+                    saveButton.Visibility = ViewStates.Gone;
+                    sendButton.Visibility = ViewStates.Visible;
+                    addItemsButton.Visibility = ViewStates.Visible;
+                }
+                else
+                {
+                    editDate.Visibility = ViewStates.Gone;
+                    saveButton.Visibility = ViewStates.Gone;
+                    sendButton.Visibility = ViewStates.Gone;
+                    addItemsButton.Visibility = ViewStates.Gone;
+                }
             }
 
             editDate.Click += (object sender, EventArgs e) =>
@@ -186,38 +193,43 @@ namespace DTG_Ordering_System
 
 		void SendButton_OnClick(object sender, EventArgs e)
 		{
-            //var callDialog = new AlertDialog.Builder(this);
-            //callDialog.SetMessage("Are you sure you want to send this order?");
-            //callDialog.SetNeutralButton("OK", delegate
-            //{
-            //    dbr = new DBRepository();
-            //    string orderId;
-            //    string branchId = prefs.GetString("branchId", null);
-            //    if (Intent.GetStringExtra("orderId") == null)
-            //    {
-            //        orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
-            //        dbr.insertOrderedItems(items, orderId, addedQuantities);
-            //    }
-            //    else
-            //    {
-            //        orderId = Intent.GetStringExtra("orderId");
-            //        dbr.updateOrder(orderId, deliveryDate.Text, true);
-            //        dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
-            //    }
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Are you sure you want to send this order?");
+            callDialog.SetNeutralButton("OK", delegate
+            {
+                dbr = new DBRepository();
+                string orderId;
+                string branchId = prefs.GetString("branchId", null);
+                if (Intent.GetStringExtra("orderId") == null) //for new Order immediately click send order
+                {
+                    orderId = dbr.insertOrder(deliveryDate.Text, false, branchId);
+                    dbr.insertOrderedItems(items, orderId, addedQuantities);
 
-            //    Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-            //    intent.PutExtra("OrderId", orderId);
-            //    StartActivityForResult(intent, 1);
+                }
+                else //for draft -> edit -> send order
+                {
+                    orderId = Intent.GetStringExtra("orderId");
+                    dbr.updateOrder(orderId, deliveryDate.Text, false);
+                    dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
+                }
 
-            //    items.Clear();
-            //    adapter.NotifyDataSetChanged();
-            //});
-            //callDialog.SetNegativeButton("Cancel", delegate { });
-            //callDialog.Show();
+                //for webservices
+                var order = dbr.getOrder(orderId);
+                string orderForDB = JsonConvert.SerializeObject(order);
 
-            InitializeService1Client();
-            _client.sendOrderAsync(Convert.ToDateTime(deliveryDate.Text));
-            
+                var orderedItems = dbr.getAllOrderedItems(orderId);
+                string orderedItemsForDB = JsonConvert.SerializeObject(orderedItems);
+
+                //List<OrderedItem> orderedItemsForDB = dbr.getAllOrderedItems(orderId);
+
+                InitializeService1Client();
+                _client.sendOrderAsync(orderForDB, Intent.GetBooleanExtra("replacement", false), orderedItemsForDB);
+
+                items.Clear();
+            });
+
+            callDialog.SetNegativeButton("Cancel", delegate { });
+            callDialog.Show();  
         }
 
         void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
@@ -369,13 +381,14 @@ namespace DTG_Ordering_System
         {
             BasicHttpBinding binding = CreateBasicHttp();
 
-            _client = new Service1Client(binding, EndPoint);
-            _client.sendOrderCompleted += _client_sendOrderCompleted;
+            _client = new Service1Client(binding, dbr.getIP());
+            _client.sendOrderCompleted += _client_sendOrderCompleted1;
         }
 
-        private void _client_sendOrderCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        private void _client_sendOrderCompleted1(object sender, sendOrderCompletedEventArgs e)
         {
             string msg = null;
+            SendStatus ss = JsonConvert.DeserializeObject<SendStatus>(e.Result);
 
             if (e.Error != null)
             {
@@ -387,8 +400,27 @@ namespace DTG_Ordering_System
             }
             else
             {
-                msg = "Successfully sent order";
+                if (ss.send_status == "Order sent.")
+                {
+                    dbr.updateOrderStatus(ss.order_id, true);
+                }
+                else if (ss.send_status == "Replacement order sent.")
+                {
+                    dbr.deleteAllOrderedItems(ss.order_id);
+                    dbr.deleteOrder(ss.order_id);
+
+                    string orderId;
+                    string branchId = prefs.GetString("branchId", null);
+                    orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
+                    dbr.insertOrderedItems(items, orderId, addedQuantities);
+                }
+
+                msg = ss.send_status;
             }
+
+            Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+            intent.PutExtra("OrderId", ss.order_id);
+            StartActivityForResult(intent, 1);
             RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
         }
 

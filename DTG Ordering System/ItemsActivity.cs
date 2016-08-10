@@ -95,13 +95,20 @@ namespace DTG_Ordering_System
                     addedQuantities.Add(items[e.Position].Id, e.Quantity);
                     itemAdd.Enabled = true;
                 }            
+                else
+                {
+                    addedItems.Remove(items[e.Position]);
+                    addedQuantities.Remove(items[e.Position].Id);
+                    addedItems.Add(items[e.Position]);
+                    addedQuantities.Add(items[e.Position].Id, e.Quantity);
+                    itemAdd.Enabled = true;
+                }
             }
 
             else if (addedItems.Exists(x => x.Id == items[e.Position].Id) == true)
             {
                 addedItems.Remove(items[e.Position]);
                 addedQuantities.Remove(items[e.Position].Id);
-
             }
             
             if (addedItems.Count == 0)
