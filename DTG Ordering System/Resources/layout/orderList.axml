@@ -7,6 +7,10 @@
     android:minHeight="25px"
     android:background="#fafafa"
     android:weightSum="100">
+    <include
+        layout="@layout/toolbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"

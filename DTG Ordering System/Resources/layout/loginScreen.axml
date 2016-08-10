@@ -39,7 +39,9 @@
             android:id="@+id/userSpinner"
             android:background="@drawable/text_input"
             android:padding="10dp"
-            android:textColor="#000000"
+            android:textColor="#ffffff"
+            android:fontFamily="Arial"
+            android:hint="Branch"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp" />
         <EditText

@@ -14,7 +14,7 @@ using Android.Preferences;
 
 namespace DTG_Ordering_System
 {
-	[Activity(Label = "My Orders", Icon = "@drawable/icon")]
+	[Activity(Icon = "@drawable/icon")]
 	public class OrdersActivity : Activity
     {
         private ListView mListView;
@@ -25,7 +25,7 @@ namespace DTG_Ordering_System
         private OrderAdapter adapter;
         DBRepository dbr = new DBRepository();
         private string branchId;
-
+        
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -35,15 +35,18 @@ namespace DTG_Ordering_System
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
             //branchId = Intent.GetStringExtra("branchId");
             branchId = prefs.GetString("branchId", null);
-            this.Title = dbr.getBranchName(branchId) + " Orders";
-
             orders = dbr.getAllOrders(branchId);
+            //Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
+            TextView branchName = FindViewById<TextView>(Resource.Id.branchName);
+            TextView logout = FindViewById<TextView>(Resource.Id.logout);
 			mListView = FindViewById<ListView>(Resource.Id.orderListView);
             mListView.Clickable = true;
             addButton = FindViewById<Button>(Resource.Id.orderAdd);
             syncButton = FindViewById<Button>(Resource.Id.syncButton);
             backButton = FindViewById<ImageButton>(Resource.Id.backButton);
-
+            //SetActionBar(toolbar);
+            //ActionBar.SetDisplayShowTitleEnabled(false);
+            branchName.Text = dbr.getBranchName(branchId);
             adapter = new OrderAdapter(this, orders, this);
             mListView.Adapter = adapter;
             
@@ -66,10 +69,63 @@ namespace DTG_Ordering_System
                 Intent intent = new Intent(this.ApplicationContext, typeof(NewOrderActivity));
                 StartActivity(intent);
             };
-
+            logout.SetOnClickListener(new LogoutClickListener(this));
             backButton.Click += BackButton_Click;
+        }
 
-			syncButton.Click += SyncButton_OnClick;
+        //private class LogoutClickListener : Java.Lang.Object, View.IOnClickListener
+        //{
+        //    private Activity activity;
+        //    public LogoutClickListener(Activity activity)
+        //    {
+        //        this.activity = activity;
+        //    }
+        //    public void OnClick(View v)
+        //    {
+        //        var callDialog = new AlertDialog.Builder(activity);
+        //        callDialog.SetMessage("Are you sure you want to logout?");
+        //        callDialog.SetNeutralButton("Yes", delegate
+        //        {
+        //            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(activity);
+        //            ISharedPreferencesEditor editor = prefs.Edit();
+        //            editor.Clear();
+        //            editor.Apply();
+
+        //            Intent intent = new Intent(activity.ApplicationContext, typeof(LoginActivity));
+        //            activity.StartActivityForResult(intent, 1);
+        //        });
+        //        callDialog.SetNegativeButton("No", delegate { });
+        //        callDialog.Show();
+        //    }
+        //}
+
+        void LogoutButton_OnClick(object sender, EventArgs e)
+        {
+            var callDialog = new AlertDialog.Builder(this);
+            callDialog.SetMessage("Are you sure you want to logout?");
+            callDialog.SetNeutralButton("Yes", delegate
+            {
+                ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+                ISharedPreferencesEditor editor = prefs.Edit();
+                editor.Clear();
+                editor.Apply();
+
+                Intent intent = new Intent(ApplicationContext, typeof(LoginActivity));
+                StartActivityForResult(intent, 1);
+            });
+            callDialog.SetNegativeButton("No", delegate { });
+            callDialog.Show();
+            //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
+            //var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
+            //new Thread(new ThreadStart(delegate
+            //{
+            //	dbr.syncDB();
+            //	//hide progress dialogue
+            //	RunOnUiThread(() => progressDialog.Hide());
+            //})).Start();
+
+            //orders.Clear();
+            //adapter.NotifyDataSetChanged();
         }
 
         private void BackButton_Click(object sender, EventArgs e)
@@ -99,35 +155,6 @@ namespace DTG_Ordering_System
 
             }
             catch { }
-        }
-
-		void SyncButton_OnClick(object sender, EventArgs e)
-		{          
-            var callDialog = new AlertDialog.Builder(this);
-            callDialog.SetMessage("Are you sure you want to logout?");
-            callDialog.SetNeutralButton("Yes", delegate
-            {
-                ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
-                ISharedPreferencesEditor editor = prefs.Edit();
-                editor.Clear();
-                editor.Apply();
-
-                Intent intent = new Intent(ApplicationContext, typeof(LoginActivity));
-                StartActivityForResult(intent, 1);
-            });
-            callDialog.SetNegativeButton("No", delegate { });
-            callDialog.Show();
-            //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
-            //var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
-            //new Thread(new ThreadStart(delegate
-            //{
-            //	dbr.syncDB();
-            //	//hide progress dialogue
-            //	RunOnUiThread(() => progressDialog.Hide());
-            //})).Start();
-
-            //orders.Clear();
-            //adapter.NotifyDataSetChanged();
         }
 
 		void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
