@@ -346,6 +346,18 @@ namespace DTG_Ordering_System
             realm.Close();
         }
 
+		public void deleteAccounts()
+		{
+			realm = Realm.GetInstance(config);
+
+			using (var transaction = realm.BeginWrite())
+			{
+				realm.RemoveAll<Account>();
+				transaction.Commit();
+			}
+			realm.Close();
+		}
+
         public EndpointAddress getIP()
         {
             EndPoint = new EndpointAddress("http://192.168.1.2:61606/Service1.svc");
@@ -354,12 +366,16 @@ namespace DTG_Ordering_System
 
         public void loadAccounts()
         {
-            deleteDB();
-            createDB();
+			realm = Realm.GetInstance(config);
 
-            insertAccount("DTG Galleria", "ateneo");
-            insertAccount("DTG Megamall", "lasalle");
-            insertAccount("DTG MOA", "college");
+			int count = realm.All<Account>().Count();
+
+			if (count == 0)
+			{
+				insertAccount("DTG Galleria", "ateneo");
+				insertAccount("DTG Megamall", "lasalle");
+				insertAccount("DTG MOA", "college");
+			}
         }
 
         public void syncDB() //temporary load of database files :))

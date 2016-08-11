@@ -36,10 +36,10 @@
             android:id="@+id/linearLayout3"
             android:layout_marginLeft="-30dp">
             <TextView
-                android:text="Add Order"
+                android:text="Order Title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/white"
-                android:id="@+id/textView1"
+                android:id="@+id/orderTitle"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

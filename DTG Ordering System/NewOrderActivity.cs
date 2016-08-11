@@ -27,6 +27,7 @@ namespace DTG_Ordering_System
         private ExpandableListView mListView;
         private ExpandableNewOrderAdapter adapter;
 		private TextView deliveryDate;
+		private TextView orderTitle;
         private Button addItemsButton;
 		private Button saveButton;
 		private Button sendButton;
@@ -50,6 +51,7 @@ namespace DTG_Ordering_System
             mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
             TextView branchName = FindViewById<TextView>(Resource.Id.branchName);
             TextView logout = FindViewById<TextView>(Resource.Id.logout);
+			orderTitle = FindViewById<TextView>(Resource.Id.orderTitle);
             addItemsButton = FindViewById<Button>(Resource.Id.addItems);
             saveButton = FindViewById<Button>(Resource.Id.saveButton);
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
@@ -70,6 +72,8 @@ namespace DTG_Ordering_System
             adapter = new ExpandableNewOrderAdapter(this, addedCategories, addedQuantities);
             mListView.SetAdapter(adapter);
 
+			orderTitle.Text = "Add Order";
+
             addItemsButton.Click += (object sender, EventArgs e) =>
             {
                 Intent intent = new Intent(this.ApplicationContext, typeof(CategoriesActivity));
@@ -82,9 +86,10 @@ namespace DTG_Ordering_System
             sendButton.Click += SendButton_OnClick;
             backButton2.Click += BackButton2_Click;
 
-            if (Intent.GetStringExtra("orderId") != null)
-            {
+			if (Intent.GetStringExtra("orderId") != null)
+			{
 				//***FOR EDIT****//
+				orderTitle.Text = "Edit Order";
 
 				Order order = dbr.getOrder(Intent.GetStringExtra("orderId"));
 				List<OrderedItem> orderedItems = dbr.getAllOrderedItems(order.Id);
@@ -116,29 +121,32 @@ namespace DTG_Ordering_System
 
 				adapter.NotifyDataSetChanged();
 
-                if (Intent.GetBooleanExtra("hasSent", false) == false)
-                {
-                    editDate.Visibility = ViewStates.Visible;
-                    saveButton.Visibility = ViewStates.Visible;
-                    sendButton.Visibility = ViewStates.Visible;
-                    addItemsButton.Visibility = ViewStates.Visible;
-                }
-                else if (Intent.GetBooleanExtra("replacement", false) == true)
-                {
-                    editDate.Visibility = ViewStates.Visible;
+				if (Intent.GetBooleanExtra("hasSent", false) == false)
+				{
+					editDate.Visibility = ViewStates.Visible;
 					saveButton.Visibility = ViewStates.Visible;
-					saveButton.Enabled = false;
-                    sendButton.Visibility = ViewStates.Visible;
-                    addItemsButton.Visibility = ViewStates.Visible;
-                }
-                else
-                {
-                    editDate.Visibility = ViewStates.Gone;
-                    saveButton.Visibility = ViewStates.Gone;
-                    sendButton.Visibility = ViewStates.Gone;
-                    addItemsButton.Visibility = ViewStates.Gone;
-                }
-            }
+					sendButton.Visibility = ViewStates.Visible;
+					addItemsButton.Visibility = ViewStates.Visible;
+				}
+				else if (Intent.GetBooleanExtra("replacement", false) == true)
+				{
+					orderTitle.Text = "Replace Order";
+
+					editDate.Visibility = ViewStates.Visible;
+					saveButton.Visibility = ViewStates.Invisible;
+					sendButton.Visibility = ViewStates.Visible;
+					addItemsButton.Visibility = ViewStates.Visible;
+				}
+				else
+				{
+					orderTitle.Text = "View Order";
+
+					editDate.Visibility = ViewStates.Gone;
+					saveButton.Visibility = ViewStates.Gone;
+					sendButton.Visibility = ViewStates.Gone;
+					addItemsButton.Visibility = ViewStates.Gone;
+				}
+			}
 
             editDate.Click += (object sender, EventArgs e) =>
             {
@@ -146,12 +154,11 @@ namespace DTG_Ordering_System
                 {
                     deliveryDate.Text = String.Format("{0:dd MMM yyyy}", time);
                     dateHolder = time;
-                    if (items.Count != 0)
+					if ((items.Count != 0) && (addedCategories.Count != 0))
                     {
-                        saveButton.Enabled = true;
+						saveButton.Enabled = true;
 						sendButton.Enabled = true;
                         changeIsComing = true;
-
                     }
                 });
                 Bundle args = new Bundle();
@@ -222,7 +229,14 @@ namespace DTG_Ordering_System
                 else //for draft -> edit -> send order
                 {
                     orderId = Intent.GetStringExtra("orderId");
-                    dbr.updateOrder(orderId, deliveryDate.Text, false);
+					if (Intent.GetBooleanExtra("replacement", false) == true)
+					{
+						dbr.updateOrder(orderId, deliveryDate.Text, true);
+					}
+					else
+					{
+						dbr.updateOrder(orderId, deliveryDate.Text, false);
+					}
                     dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
                 }
 
@@ -286,14 +300,7 @@ namespace DTG_Ordering_System
 
 						if (addedCategories.Count != 0)
 						{
-							if (Intent.GetBooleanExtra("replacement", false) == true)
-							{
-								saveButton.Enabled = false;
-							}
-							else
-							{
-								saveButton.Enabled = true;
-							}
+							saveButton.Enabled = true;
 							sendButton.Enabled = true;
 							adapter.NotifyDataSetChanged();
 						}
@@ -320,6 +327,7 @@ namespace DTG_Ordering_System
             {
                 if (data != null)
                 {
+					saveButton.Enabled = true;
                     saveButton.Enabled = true;
                     sendButton.Enabled = true;
                     var message = data.GetStringExtra("addedItems");
@@ -412,6 +420,8 @@ namespace DTG_Ordering_System
             {
                 //msg = e.Error.Message;
                 msg = "Failed to connect to Server";
+				Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+				StartActivityForResult(intent, 1);
             }
             else if (e.Cancelled)
             {
