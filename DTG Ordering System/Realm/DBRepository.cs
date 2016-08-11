@@ -171,6 +171,22 @@ namespace DTG_Ordering_System
 			}
 		}
 
+        public void insertOrderForReplacement(string orderId, string deliveryDate, bool hasSent, string branchId)
+        {
+            realm = Realm.GetInstance(config);
+
+            using (var transaction = realm.BeginWrite())
+            {
+                var order = realm.CreateObject<Order>();
+                order.BranchId = branchId;
+                order.Id = orderId;
+                order.DeliveryDate = deliveryDate;
+                order.HasSent = hasSent;
+
+                transaction.Commit();
+            }
+        }
+
         public void insertAccount(string username, string password)
         {
             realm = Realm.GetInstance(config);
@@ -332,7 +348,7 @@ namespace DTG_Ordering_System
 
         public EndpointAddress getIP()
         {
-            EndPoint = new EndpointAddress("http://192.168.1.7:61606/Service1.svc");
+            EndPoint = new EndpointAddress("http://192.168.1.185:61606/Service1.svc");
             return EndPoint;
         }
 

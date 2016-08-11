@@ -39,6 +39,11 @@ namespace DTG_Ordering_System
             branchId = prefs.GetString("branchId", null);
             this.Title = dbr.getBranchName(branchId) + " Orders";
 
+            if (Intent.HasExtra("OrderId") == true)
+            {
+                Order o = dbr.getOrder(Intent.GetStringExtra("OrderId"));
+                dbr.updateOrderStatus(o.Id, true);
+            }
             orders = dbr.getAllOrders(branchId);
 			mListView = FindViewById<ListView>(Resource.Id.orderListView);
             mListView.Clickable = true;

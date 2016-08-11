@@ -247,7 +247,6 @@ namespace DTG_Ordering_System
                 InitializeService1Client();
                 _client.sendOrderAsync(orderForDB, Intent.GetBooleanExtra("replacement", false), orderedItemsForDB);
 
-                items.Clear();
             });
 
             callDialog.SetNegativeButton("Cancel", delegate { });
@@ -410,11 +409,11 @@ namespace DTG_Ordering_System
         private void _client_sendOrderCompleted1(object sender, sendOrderCompletedEventArgs e)
         {
             string msg = null;
-            SendStatus ss = JsonConvert.DeserializeObject<SendStatus>(e.Result);
 
             if (e.Error != null)
             {
-                msg = e.Error.Message;
+                //msg = e.Error.Message;
+                msg = "Failed to connect to Server";
             }
             else if (e.Cancelled)
             {
@@ -422,9 +421,12 @@ namespace DTG_Ordering_System
             }
             else
             {
+                SendStatus ss = JsonConvert.DeserializeObject<SendStatus>(e.Result);
+
                 if (ss.send_status == "Order sent.")
                 {
                     dbr.updateOrderStatus(ss.order_id, true);
+                    //actually useless because of threading??
                 }
                 else if (ss.send_status == "Replacement order sent.")
                 {
@@ -433,16 +435,24 @@ namespace DTG_Ordering_System
 
                     string orderId;
                     string branchId = prefs.GetString("branchId", null);
-                    orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
-                    dbr.insertOrderedItems(items, orderId, addedQuantities);
+                    //orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
+                    dbr.insertOrderForReplacement(ss.order_id, deliveryDate.Text, true, branchId);
+                    dbr.insertOrderedItems(items, ss.order_id, addedQuantities);
                 }
 
+
                 msg = ss.send_status;
+
+                if ((ss.send_status == "Order sent.") || (ss.send_status == "Replacement order sent."))
+                {
+                    items.Clear();
+                    Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+                    intent.PutExtra("OrderId", ss.order_id);
+                    StartActivityForResult(intent, 1);
+                }
             }
 
-            Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-            intent.PutExtra("OrderId", ss.order_id);
-            StartActivityForResult(intent, 1);
+            
             RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
         }
 
