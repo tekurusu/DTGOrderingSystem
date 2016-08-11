@@ -72,7 +72,7 @@
         android:weightSum="100"
         android:id="@+id/logOutButton">
         <Button
-            android:text="LOGOUT"
+            android:text="SYNC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/olive"

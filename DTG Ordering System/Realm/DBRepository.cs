@@ -16,6 +16,7 @@ namespace DTG_Ordering_System
 		private static string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "default.realm");
 		RealmConfiguration config = new RealmConfiguration(dbPath, true);
         public EndpointAddress EndPoint;
+		private Service1Client _client;
 
         public void createDB()
 		{
@@ -348,22 +349,22 @@ namespace DTG_Ordering_System
 
         public EndpointAddress getIP()
         {
-            EndPoint = new EndpointAddress("http://192.168.1.185:61606/Service1.svc");
+            EndPoint = new EndpointAddress("http://192.168.1.2:61606/Service1.svc");
             return EndPoint;
         }
 
-        public void syncDB() //temporary load of database files :))
-        {
-            deleteDB();
+		public void loadAccounts()
+		{
+			deleteDB();
 			createDB();
 
-            insertAccount("DTG Galleria", "ateneo");
-            insertAccount("DTG Megamall", "lasalle");
-            insertAccount("DTG MOA", "college");
+			insertAccount("DTG Galleria", "ateneo");
+			insertAccount("DTG Megamall", "lasalle");
+			insertAccount("DTG MOA", "college");
+		}
 
-            //_client.getAllItemsAsync()
-;
-
+        public void syncDB() //temporary load of database files :))
+        {
             //string ingredients = insertCategory("A. INGREDIENTS");
             //string drinks = insertCategory("B. DRINKS & JUICES");
             //string dining = insertCategory("C. DINING SUPPLIES");

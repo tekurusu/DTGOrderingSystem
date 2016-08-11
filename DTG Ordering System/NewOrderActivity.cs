@@ -259,7 +259,7 @@ namespace DTG_Ordering_System
 
         void DeleteItem_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
         {
-			if (Intent.GetBooleanExtra("hasSent", false) == false)
+			if ((Intent.GetBooleanExtra("hasSent", false) == false) || (Intent.GetBooleanExtra("replacement", false) == true))
 			{
 				long listposition = mListView.GetExpandableListPosition(e.Position);
 				int childPosition = ExpandableListView.GetPackedPositionChild(listposition);

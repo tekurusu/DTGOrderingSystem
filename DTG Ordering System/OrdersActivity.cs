@@ -21,7 +21,7 @@ namespace DTG_Ordering_System
         private ListView mListView;
         private static List<Order> orders = new List<Order>();
         private Button addButton;
-        private Button syncButton;
+		private Button syncButton;
         private ImageButton backButton;
         private OrderAdapter adapter;
         DBRepository dbr = new DBRepository();
@@ -81,6 +81,7 @@ namespace DTG_Ordering_System
                 StartActivity(intent);
             };
             logout.SetOnClickListener(new LogoutClickListener(this));
+			syncButton.Click += SyncButton_OnClick;
             backButton.Click += BackButton_Click;
         }
 
@@ -126,17 +127,6 @@ namespace DTG_Ordering_System
             });
             callDialog.SetNegativeButton("No", delegate { });
             callDialog.Show();
-            //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
-            //var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
-            //new Thread(new ThreadStart(delegate
-            //{
-            //	dbr.syncDB();
-            //	//hide progress dialogue
-            //	RunOnUiThread(() => progressDialog.Hide());
-            //})).Start();
-
-            //orders.Clear();
-            //adapter.NotifyDataSetChanged();
         }
 
         private void BackButton_Click(object sender, EventArgs e)
@@ -157,108 +147,88 @@ namespace DTG_Ordering_System
 
             try
             {
-
                 var orderId = data.GetStringExtra("OrderId");
                 orders.Add(dbr.getOrder(orderId));
                 adapter.NotifyDataSetChanged();
-                
-
-
             }
             catch { }
         }
 
 		void SyncButton_OnClick(object sender, EventArgs e)
 		{
-            var callDialog = new AlertDialog.Builder(this);
-            callDialog.SetMessage("Are you sure you want to logout?");
-            callDialog.SetNeutralButton("Yes", delegate
+            var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
+            new Thread(new ThreadStart(delegate
             {
-                ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
-                ISharedPreferencesEditor editor = prefs.Edit();
-                editor.Clear();
-                editor.Apply();
+                //dbr.syncDB();
+				InitializeService1Client();
+				_client.getAllCategoriesAsync();
+                //hide progress dialogue
+                RunOnUiThread(() => progressDialog.Hide());
+            })).Start();
 
-                Intent intent = new Intent(ApplicationContext, typeof(LoginActivity));
-                StartActivityForResult(intent, 1);
-            });
-            callDialog.SetNegativeButton("No", delegate { });
-            callDialog.Show();
-            //Toast.MakeText(this, branchId.ToString(), ToastLength.Long).Show();
-
-            //var progressDialog = ProgressDialog.Show(this, "Please wait...", "Syncing Database...", true);
-            //new Thread(new ThreadStart(delegate
-            //{
-            //    dbr.syncDB();
-            //    //hide progress dialogue
-            //    RunOnUiThread(() => progressDialog.Hide());
-            //})).Start();
-
-            //orders.Clear();
-            //adapter.NotifyDataSetChanged();
         }
 
-        //private void InitializeService1Client()
-        //{
-        //    BasicHttpBinding binding = CreateBasicHttp();
+        private void InitializeService1Client()
+		{
+			BasicHttpBinding binding = CreateBasicHttp();
 
-        //    _client = new Service1Client(binding, dbr.getIP());
-        //    _client.getAllItemsCompleted += _client_getAllItemsCompleted;
-        //    _client.getAllCategoriesCompleted += _client_getAllICategoriesCompleted;
-        //}
+			_client = new Service1Client(binding, dbr.getIP());
+			_client.getAllCategoriesCompleted += _client_getAllCategoriesCompleted;
+			_client.getAllItemsCompleted += _client_getAllItemsCompleted;
+		}
 
-        //private void _client_getAllICategoriesCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        //{
-        //    string msg = null;
+        private void _client_getAllCategoriesCompleted(object sender, getAllCategoriesCompletedEventArgs e)
+		{
+			List<Category> categories = JsonConvert.DeserializeObject<List<Category>>(e.Result);
+			foreach (Category c in categories)
+			{
+				dbr.insertCategory(c.Id, c.Name);
+			}
 
-        //    if (e.Error != null)
-        //    {
-        //        msg = e.Error.Message;
-        //    }
-        //    else if (e.Cancelled)
-        //    {
-        //        msg = "Request was cancelled.";
-        //    }
-        //    else
-        //    {
-        //        msg = "All categories synced.";
-        //    }
-        //    RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
-        //}
+			_client.getAllItemsAsync();
+		}
 
-        //private void _client_getAllItemsCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        //{
-        //    string msg = null;
+        private void _client_getAllItemsCompleted(object sender, getAllItemsCompletedEventArgs e)
+		{
+			List<Item> items = JsonConvert.DeserializeObject<List<Item>>(e.Result);
+			items.Sort((x, y) => x.Name.CompareTo(y.Name));
+			foreach (Item i in items)
+			{
+				dbr.insertItem(i.Id, i.Name, i.Unit, dbr.getCategory(i.Category_Id));
+			}
 
-        //    if (e.Error != null)
-        //    {
-        //        msg = e.Error.Message;
-        //    }
-        //    else if (e.Cancelled)
-        //    {
-        //        msg = "Request was cancelled.";
-        //    }
-        //    else
-        //    {
-        //        msg = "All items synced.";
-        //    }
-        //    RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
-        //}
+			//Category c = dbr.getCategory(items[0].Category_Id);
+			string msg = null;
 
-        //private static BasicHttpBinding CreateBasicHttp()
-        //{
-        //    BasicHttpBinding binding = new BasicHttpBinding
-        //    {
-        //        Name = "basicHttpBinding",
-        //        MaxBufferSize = 2147483647,
-        //        MaxReceivedMessageSize = 2147483647
-        //    };
-        //    TimeSpan timeout = new TimeSpan(0, 0, 30);
-        //    binding.SendTimeout = timeout;
-        //    binding.OpenTimeout = timeout;
-        //    binding.ReceiveTimeout = timeout;
-        //    return binding;
-        //}
+			if (e.Error != null)
+			{
+				msg = e.Error.Message;
+			}
+			else if (e.Cancelled)
+			{
+				msg = "Request was cancelled.";
+			}
+			else
+			{
+				msg = "Successfully synced items";
+			}
+			RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Long).Show());
+		}
+
+        private static BasicHttpBinding CreateBasicHttp()
+		{
+			BasicHttpBinding binding = new BasicHttpBinding
+			{
+				Name = "basicHttpBinding",
+				MaxBufferSize = 2147483647,
+				MaxReceivedMessageSize = 2147483647
+			};
+			TimeSpan timeout = new TimeSpan(0, 0, 30);
+			binding.SendTimeout = timeout;
+			binding.OpenTimeout = timeout;
+			binding.ReceiveTimeout = timeout;
+			return binding;
+		}
 
         void DeleteOrder_OnLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
 		{
