@@ -231,13 +231,14 @@ namespace DTG_Ordering_System
                     orderId = Intent.GetStringExtra("orderId");
 					if (Intent.GetBooleanExtra("replacement", false) == true)
 					{
-						dbr.updateOrder(orderId, deliveryDate.Text, true);
+                        //dbr.updateOrder(orderId, deliveryDate.Text, true);
+                        dbr.updateOrderStatus(orderId, true);
 					}
 					else
 					{
 						dbr.updateOrder(orderId, deliveryDate.Text, false);
-					}
-                    dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
+                        dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
+                    }
                 }
 
                 //for webservices
@@ -274,9 +275,13 @@ namespace DTG_Ordering_System
 					{
 						if (Intent.GetStringExtra("orderId") != null)
 						{
-							addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
+                            Item searchedItem = items.Find(x => x.Id == addedCategories[groupPosition].Items[childPosition].Id);
+                            items.Remove(searchedItem);
+
+                            addedQuantities.Remove(addedCategories[groupPosition].Items[childPosition].Id);
                             
 							addedCategories[groupPosition].Items.RemoveAt(childPosition);
+
                             if (addedCategories[groupPosition].Items.Count == 0)
                             {
                                 addedCategories.RemoveAt(groupPosition);
@@ -420,8 +425,8 @@ namespace DTG_Ordering_System
             {
                 //msg = e.Error.Message;
                 msg = "Failed to connect to Server";
-				Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
-				StartActivityForResult(intent, 1);
+				//Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
+				//StartActivityForResult(intent, 1);
             }
             else if (e.Cancelled)
             {
