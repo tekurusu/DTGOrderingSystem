@@ -49,18 +49,16 @@
         android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="95"
+        android:layout_weight="98"
         android:id="@+id/itemListView" />
     <LinearLayout
         android:orientation="vertical"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        android:layout_weight="5"
+        android:layout_weight="2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/olive"
         android:id="@+id/linearLayout2"
-        android:padding="5dp">
+        android:padding="8dp">
         <Space
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

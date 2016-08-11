@@ -56,12 +56,13 @@ namespace DTG_Ordering_System
             string itemName = Arguments.GetString("itemName");
 
 			var view = inflater.Inflate(Resource.Layout.numberPickerFragment, container, false);
+
             numPicker = view.FindViewById<NumberPicker>(Resource.Id.quantityPicker);
             okButton = view.FindViewById<Button>(Resource.Id.pickerOK);
             cancelButton = view.FindViewById<Button>(Resource.Id.pickerCancel);
             numPickerQuantity = view.FindViewById<TextView>(Resource.Id.numPickerQuantity);
 
-            numPickerQuantity.Text = "Input quantity for " + itemName + ":";
+            numPickerQuantity.Text = itemName;
 
             okButton.Click += (object sender, EventArgs e) =>
             {
@@ -77,7 +78,7 @@ namespace DTG_Ordering_System
                 this.Dismiss();
             };
 
-            numPicker.MaxValue = 100;
+            numPicker.MaxValue = 999;
             numPicker.MinValue = 0;
             numPicker.Value = quantity;
             

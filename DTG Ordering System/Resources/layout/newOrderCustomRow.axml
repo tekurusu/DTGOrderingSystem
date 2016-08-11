@@ -30,6 +30,8 @@
             android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:layout_weight="15"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:id="@+id/itemUnit" />
         <TextView
             android:text="x"
@@ -42,8 +44,9 @@
             android:text="0"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#000000"
-            android:layout_width="wrap_content"
+            android:layout_width="30dp"
             android:layout_height="wrap_content"
+            android:gravity="right"
             android:id="@+id/itemQuantity" />
     </LinearLayout>
 </LinearLayout>

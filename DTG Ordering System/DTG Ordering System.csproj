@@ -70,6 +70,7 @@
     <Compile Include="Adapters\ExpandableNewOrderAdapter.cs" />
     <Compile Include="Adapters\newOrderAdapter.cs" />
     <Compile Include="Adapters\orderAdapter.cs" />
+    <Compile Include="Adapters\spinnerAdapter.cs" />
     <Compile Include="CategoriesActivity.cs" />
     <Compile Include="DialogFragments\DatePickerFragment.cs" />
     <Compile Include="DialogFragments\NumberPickerFragment.cs" />
@@ -139,6 +140,9 @@
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dtglogosplash.png" />
     <AndroidResource Include="Resources\layout\categoryCustomRow.axml" />
+    <AndroidResource Include="Resources\layout\spinnerCustomRow.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\itemList.axml">

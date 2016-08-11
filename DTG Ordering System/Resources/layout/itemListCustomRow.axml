@@ -13,7 +13,6 @@
         android:weightSum="100"
         android:paddingBottom="10dp"
         android:paddingLeft="15dp"
-        android:paddingRight="10dp"
         android:paddingTop="10dp">
         <TextView
             android:text="Item Name"
@@ -30,7 +29,9 @@
             android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:layout_weight="15"
-            android:id="@+id/itemUnit" />
+            android:id="@+id/itemUnit"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
         <TextView
             android:text="x"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -42,7 +43,8 @@
             android:text="0"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#000000"
-            android:layout_width="wrap_content"
+            android:layout_width="30dp"
+            android:gravity="right"
             android:layout_height="wrap_content"
             android:id="@+id/itemQuantity" />
     </LinearLayout>

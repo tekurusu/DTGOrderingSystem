@@ -48,18 +48,20 @@ namespace DTG_Ordering_System
             userSpinner = FindViewById<Spinner>(Resource.Id.userSpinner);
             passwordText = FindViewById<EditText>(Resource.Id.passwordText);   
             var accounts2 = dbr.getAllAccounts();
-            string[] accounts = new string[accounts2.Count() + 1];
-            accounts[0] = "<Select Branch>";
-            for (int x = 1; x < accounts2.Count() + 1; x++)
+
+            List<String> accounts = new List<String>();
+
+            accounts.Add("<Select Branch>");
+            foreach (var i in accounts2)
             {
-                
-                accounts[x] = accounts2[x - 1].Branch;
+                accounts.Add(i.Branch);
             }
-            
-            ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, accounts);
-            adapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
+
+            SpinnerAdapter adapter = new SpinnerAdapter(this, accounts, this);
+
             userSpinner.Adapter = adapter;
-            
+            userSpinner.SetSelection(0);           
+
             loginButton.Click += delegate
             {
 
@@ -70,7 +72,7 @@ namespace DTG_Ordering_System
 
                     //ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
                     ISharedPreferencesEditor editor = prefs.Edit();
-                    editor.PutString("branchId", accounts2[userSpinner.SelectedItemPosition - 1].BranchId.ToString());
+                    editor.PutString("branchId", accounts2[userSpinner.SelectedItemPosition].BranchId.ToString());
                     editor.Apply();
 
                     StartActivity(intent);

@@ -70,6 +70,7 @@ namespace DTG_Ordering_System
             {
                 FragmentTransaction transaction = FragmentManager.BeginTransaction();
                 NumberPickerFragment picker = new NumberPickerFragment();
+                picker.SetStyle(DialogFragmentStyle.NoTitle, 0);
 
                 Bundle args = new Bundle();
                 args.PutInt("quantity", quantities[items[e.Position].Id]);
