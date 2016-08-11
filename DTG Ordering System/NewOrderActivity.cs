@@ -126,7 +126,8 @@ namespace DTG_Ordering_System
                 else if (Intent.GetBooleanExtra("replacement", false) == true)
                 {
                     editDate.Visibility = ViewStates.Visible;
-                    saveButton.Visibility = ViewStates.Gone;
+					saveButton.Visibility = ViewStates.Visible;
+					saveButton.Enabled = false;
                     sendButton.Visibility = ViewStates.Visible;
                     addItemsButton.Visibility = ViewStates.Visible;
                 }
@@ -294,12 +295,19 @@ namespace DTG_Ordering_System
                             }
                             adapter.NotifyDataSetChanged();
 						}
-
+							
 						changeIsComing = true;
 
 						if (addedCategories.Count != 0)
 						{
-							saveButton.Enabled = true;
+							if (Intent.GetBooleanExtra("replacement", false) == true)
+							{
+								saveButton.Enabled = false;
+							}
+							else
+							{
+								saveButton.Enabled = true;
+							}
 							sendButton.Enabled = true;
 							adapter.NotifyDataSetChanged();
 						}
