@@ -76,10 +76,10 @@ namespace DTG_Ordering_System
                 StartActivityForResult(intent, 0);
             };
 
+            logout.Visibility = ViewStates.Invisible;
             mListView.ItemLongClick += DeleteItem_OnLongClick;
             saveButton.Click += SaveButton_OnClick;
             sendButton.Click += SendButton_OnClick;
-            logout.SetOnClickListener(new LogoutClickListener(this));
             backButton2.Click += BackButton2_Click;
 
             if (Intent.GetStringExtra("orderId") != null)
@@ -166,21 +166,7 @@ namespace DTG_Ordering_System
 
         private void BackButton2_Click(object sender, EventArgs e)
         {
-            if (changeIsComing)
-            {
-                var callDialog = new AlertDialog.Builder(this);
-                callDialog.SetMessage("Discard changes for this order?");
-                callDialog.SetNeutralButton("Yes", delegate
-                {
-                    base.OnBackPressed();
-                });
-                callDialog.SetNegativeButton("No", delegate { });
-                callDialog.Show();
-            }
-            else
-            {
-                base.OnBackPressed();
-            }
+            OnBackPressed();
         }
 
         void SaveButton_OnClick(object sender, EventArgs e)
@@ -445,7 +431,7 @@ namespace DTG_Ordering_System
                     dbr.deleteAllOrderedItems(ss.order_id);
                     dbr.deleteOrder(ss.order_id);
 
-                    string orderId;
+                    //string orderId;
                     string branchId = prefs.GetString("branchId", null);
                     //orderId = dbr.insertOrder(deliveryDate.Text, true, branchId);
                     dbr.insertOrderForReplacement(ss.order_id, deliveryDate.Text, true, branchId);

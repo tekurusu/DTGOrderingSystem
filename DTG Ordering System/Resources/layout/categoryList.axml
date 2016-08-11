@@ -5,13 +5,48 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-      <include
+    <include
         layout="@layout/toolbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/olive"
+        android:id="@+id/linearLayout1"
+        android:padding="5dp">
+        <ImageButton
+            android:src="@drawable/backB"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@color/olive"
+            android:id="@+id/backButton3"
+            android:scaleType="fitCenter" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3"
+            android:layout_marginLeft="-30dp">
+            <TextView
+                android:text="Choose Category"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/white"
+                android:id="@+id/textView1"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
     <ListView
         android:minWidth="25px"
         android:minHeight="25px"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/categoriesListView" />

@@ -131,14 +131,7 @@ namespace DTG_Ordering_System
 
         private void BackButton_Click(object sender, EventArgs e)
         {
-            var callDialog = new AlertDialog.Builder(this);
-            callDialog.SetMessage("Close DTG Ordering System app?");
-            callDialog.SetNeutralButton("Yes", delegate
-            {
-                this.FinishAffinity();
-            });
-            callDialog.SetNegativeButton("No", delegate { });
-            callDialog.Show();
+            OnBackPressed();
         }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)

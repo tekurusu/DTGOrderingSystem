@@ -52,7 +52,6 @@ namespace DTG_Ordering_System
 
 			TextView itemName = row.FindViewById<TextView>(Resource.Id.itemName);
 			itemName.Text = items[position].Name;
-            itemName.SetTextColor(Color.HotPink);
 
 			TextView itemUnit = row.FindViewById<TextView>(Resource.Id.itemUnit);
 			itemUnit.Text = items[position].Unit;

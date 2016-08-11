@@ -7,6 +7,7 @@ using Android.Widget;
 using Android.OS;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Android.Preferences;
 
 namespace DTG_Ordering_System
 {
@@ -21,24 +22,37 @@ namespace DTG_Ordering_System
         private ListView mListView;
         private ItemAdapter adapter;
         private Button itemAdd;
+        private TextView categoryName;
+        private string branchId;
+        private ImageButton backButton4;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.itemList);
-            this.Title = Intent.Extras.GetString("categoryName");
+            //this.Title = Intent.Extras.GetString("categoryName");
+            DBRepository dbr = new DBRepository();
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            branchId = prefs.GetString("branchId", null);
 
             mListView = FindViewById<ListView>(Resource.Id.itemListView);
             itemAdd = FindViewById<Button>(Resource.Id.itemAdd);
+            categoryName = FindViewById<TextView>(Resource.Id.categoryName);
+            TextView branchName = FindViewById<TextView>(Resource.Id.branchName);
+            branchName.Text = dbr.getBranchName(branchId);
+            TextView logout = FindViewById<TextView>(Resource.Id.logout);
+            logout.Visibility = ViewStates.Invisible;
+            backButton4 = FindViewById<ImageButton>(Resource.Id.backButton4);
+
+            categoryName.Text = Intent.Extras.GetString("categoryName");
 
             //clear lists if start of new activity.
-			items.Clear();
+            items.Clear();
             addedItems.Clear();
             quantities.Clear();
             addedQuantities.Clear();
-
-			DBRepository dbr = new DBRepository();
+			
             //dbr.clearQuantity(Intent.Extras.GetString("categoryId")); //resets initial values for items to 0
             items = dbr.getAllItems(Intent.Extras.GetString("categoryId"));
             foreach(Item i in items)
@@ -79,6 +93,13 @@ namespace DTG_Ordering_System
                 SetResult(Result.Ok, intent);                
                 Finish();
             };
+
+            backButton4.Click += BackButton4_Click;
+        }
+
+        private void BackButton4_Click(object sender, EventArgs e)
+        {
+            OnBackPressed();
         }
 
         private void Picker_onNumberPickComplete(object sender, OnNumberPickEventArgs e)

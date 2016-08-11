@@ -6,26 +6,83 @@
     android:minWidth="25px"
     android:minHeight="25px"
     android:weightSum="100">
-  <include
-    layout="@layout/toolbarlayout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    <include
+        layout="@layout/toolbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/olive"
+        android:id="@+id/linearLayout1"
+        android:padding="5dp">
+        <ImageButton
+            android:src="@drawable/backB"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@color/olive"
+            android:id="@+id/backButton4"
+            android:scaleType="fitCenter" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3"
+            android:layout_marginLeft="-30dp">
+            <TextView
+                android:text="Add Order"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:id="@+id/categoryName"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
     <ListView
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_weight="90"
         android:layout_height="wrap_content"
+        android:layout_weight="95"
         android:id="@+id/itemListView" />
-    <Button
-        android:text="Add to Order"
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_weight="5"
         android:layout_width="match_parent"
-        android:layout_weight="10"
         android:layout_height="wrap_content"
-        android:id="@+id/itemAdd"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="100dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="100dp"
-        android:enabled="false" />
+        android:background="@color/olive"
+        android:id="@+id/linearLayout2"
+        android:padding="5dp">
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/space1"
+            android:layout_weight="1" />
+        <Button
+            android:text="Add to Order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/itemAdd"
+            android:textColor="@color/olive"
+            android:background="@drawable/white_button_solo"
+            android:layout_gravity="center"
+            android:enabled="false"
+            android:textSize="15dp"
+            android:fontFamily="Arial"
+            android:layout_weight="0"
+            android:padding="5dp" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/space2"
+            android:layout_weight="1" />
+    </LinearLayout>
 </LinearLayout>
