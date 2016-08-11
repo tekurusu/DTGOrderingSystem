@@ -12,7 +12,7 @@ using Android.Widget;
 
 namespace DTG_Ordering_System
 {
-	[Activity(Label = "MyApp", MainLauncher = true, NoHistory = true, Theme = "@style/Theme.Splash", 
+	[Activity(Label = "DTG OS", MainLauncher = true, NoHistory = true, Theme = "@style/Theme.Splash", 
 	          ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	
 	public class SplashScreen : Activity
