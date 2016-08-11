@@ -48,7 +48,7 @@ namespace DTG_Ordering_System
             syncButton = FindViewById<Button>(Resource.Id.syncButton);            
             var accounts2 = dbr.getAllAccounts();
             string[] accounts = new string[accounts2.Count() + 1];
-            accounts[0] = "Branch";
+            accounts[0] = "<Select Branch>";
             for (int x = 1; x < accounts2.Count() + 1; x++)
             {
                 
@@ -78,7 +78,7 @@ namespace DTG_Ordering_System
                 }
                 else
                 {
-                    Toast.MakeText(this, "Sorry, we can't log you in with what you entered, please try again.", ToastLength.Long).Show();
+                    Toast.MakeText(this, "Invalid branch or password. Please try again.", ToastLength.Long).Show();
                 }
             };
 

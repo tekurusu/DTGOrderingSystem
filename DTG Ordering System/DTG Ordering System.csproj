@@ -134,6 +134,7 @@
     <AndroidResource Include="Resources\layout\ToolbarLayout.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\drawable\dtglogosplash.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\itemList.axml">
