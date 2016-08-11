@@ -205,6 +205,7 @@ namespace DTG_Ordering_System
 
                 Intent intent = new Intent(ApplicationContext, typeof(OrdersActivity));
 				intent.PutExtra("OrderId", orderId);
+                intent.PutExtra("isFromEdit", true);
 				StartActivityForResult(intent, 1);
                 //SetResult(Result.Ok, intent);
                 //Finish();

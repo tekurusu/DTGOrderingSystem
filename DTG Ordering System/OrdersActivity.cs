@@ -40,7 +40,7 @@ namespace DTG_Ordering_System
 
             this.Title = dbr.getBranchName(branchId) + " Orders";
 
-            if (Intent.HasExtra("OrderId") == true)
+            if ((Intent.HasExtra("OrderId") == true) && (Intent.HasExtra("isFromEdit") == false))
             {
                 Order o = dbr.getOrder(Intent.GetStringExtra("OrderId"));
                 dbr.updateOrderStatus(o.Id, true);
