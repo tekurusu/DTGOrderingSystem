@@ -73,6 +73,7 @@
     <Compile Include="DialogFragments\DatePickerFragment.cs" />
     <Compile Include="DialogFragments\NumberPickerFragment.cs" />
     <Compile Include="LoginActivity.cs" />
+    <Compile Include="LogoutOnClickListener.cs" />
     <Compile Include="OrdersActivity.cs" />
     <Compile Include="NewOrderActivity.cs" />
     <Compile Include="Realm\Account.cs" />
@@ -129,7 +130,8 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\illuminati.png" />
-    <AndroidResource Include="Resources\values\Color.xml">
+    <AndroidResource Include="Resources\values\Color.xml" />
+    <AndroidResource Include="Resources\layout\ToolbarLayout.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -145,7 +147,9 @@
     <AndroidResource Include="Resources\drawable\Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Properties\AndroidManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\anim\slide_up.xml" />

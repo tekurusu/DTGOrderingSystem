@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 
 namespace DTG_Ordering_System
 {
+    
     [Activity(Label = "DTG Ordering System", Icon = "@drawable/icon")]
     public class LoginActivity : Activity
     {
@@ -32,7 +33,6 @@ namespace DTG_Ordering_System
 
             base.OnCreate(savedInstanceState);
             this.RequestWindowFeature(WindowFeatures.NoTitle);
-
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
             branchId = prefs.GetString("branchId", null);
             if (branchId != null)
@@ -42,21 +42,20 @@ namespace DTG_Ordering_System
             }
 
             SetContentView(Resource.Layout.loginScreen);
-
-           
-
             loginButton = FindViewById<Button>(Resource.Id.loginButton);
             userSpinner = FindViewById<Spinner>(Resource.Id.userSpinner);
             passwordText = FindViewById<EditText>(Resource.Id.passwordText);
-            syncButton = FindViewById<Button>(Resource.Id.syncButton);
-            
+            syncButton = FindViewById<Button>(Resource.Id.syncButton);            
             var accounts2 = dbr.getAllAccounts();
-            String[] accounts = new String[accounts2.Count()];
-            for (int x = 0; x < accounts2.Count(); x++)
+            string[] accounts = new string[accounts2.Count() + 1];
+            accounts[0] = "Branch";
+            for (int x = 1; x < accounts2.Count() + 1; x++)
             {
-                accounts[x] = accounts2[x].Branch;
+                
+                accounts[x] = accounts2[x - 1].Branch;
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem, accounts);
+            
+            ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, accounts);
             adapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
             userSpinner.Adapter = adapter;
             
@@ -70,7 +69,7 @@ namespace DTG_Ordering_System
 
                     //ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
                     ISharedPreferencesEditor editor = prefs.Edit();
-                    editor.PutString("branchId", accounts2[userSpinner.SelectedItemPosition].BranchId.ToString());
+                    editor.PutString("branchId", accounts2[userSpinner.SelectedItemPosition - 1].BranchId.ToString());
                     editor.Apply();
 
                     StartActivity(intent);

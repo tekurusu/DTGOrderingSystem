@@ -48,6 +48,8 @@ namespace DTG_Ordering_System
             prefs = PreferenceManager.GetDefaultSharedPreferences(this);
             branchId = prefs.GetString("branchId", null);
             mListView = FindViewById<ExpandableListView>(Resource.Id.selectedItemsListView);
+            TextView branchName = FindViewById<TextView>(Resource.Id.branchName);
+            TextView logout = FindViewById<TextView>(Resource.Id.logout);
             addItemsButton = FindViewById<Button>(Resource.Id.addItems);
             saveButton = FindViewById<Button>(Resource.Id.saveButton);
             sendButton = FindViewById<Button>(Resource.Id.sendButton);
@@ -55,7 +57,7 @@ namespace DTG_Ordering_System
             editDate = FindViewById<Button>(Resource.Id.editDate);
             backButton2 = FindViewById<ImageButton>(Resource.Id.backButton2);
             changeIsComing = false;
-                
+            branchName.Text = dbr.getBranchName(branchId);
             //code for datepicker
             DateTime now = DateTime.Now.ToLocalTime();
             dateHolder = now;
@@ -77,6 +79,7 @@ namespace DTG_Ordering_System
             mListView.ItemLongClick += DeleteItem_OnLongClick;
             saveButton.Click += SaveButton_OnClick;
             sendButton.Click += SendButton_OnClick;
+            logout.SetOnClickListener(new LogoutClickListener(this));
             backButton2.Click += BackButton2_Click;
 
             if (Intent.GetStringExtra("orderId") != null)
