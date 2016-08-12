@@ -360,7 +360,7 @@ namespace DTG_Ordering_System
 
         public EndpointAddress getIP()
         {
-            EndPoint = new EndpointAddress("http://192.168.1.2:61606/Service1.svc");
+            EndPoint = new EndpointAddress("http://192.168.1.99:61606/Service1.svc");
             return EndPoint;
         }
 

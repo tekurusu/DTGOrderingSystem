@@ -225,6 +225,17 @@ namespace DTG_Ordering_System
                     orderId = dbr.insertOrder(deliveryDate.Text, false, branchId);
                     dbr.insertOrderedItems(items, orderId, addedQuantities);
 
+                    //for webservices
+                    var order = dbr.getOrder(orderId);
+                    string orderForDB = JsonConvert.SerializeObject(order);
+
+                    var orderedItems = dbr.getAllOrderedItems(orderId);
+                    string orderedItemsForDB = JsonConvert.SerializeObject(orderedItems);
+
+                    //List<OrderedItem> orderedItemsForDB = dbr.getAllOrderedItems(orderId);
+
+                    InitializeService1Client();
+                    _client.sendOrderAsync(orderForDB, Intent.GetBooleanExtra("replacement", false), orderedItemsForDB);
                 }
                 else //for draft -> edit -> send order
                 {
@@ -233,25 +244,47 @@ namespace DTG_Ordering_System
 					{
                         //dbr.updateOrder(orderId, deliveryDate.Text, true);
                         dbr.updateOrderStatus(orderId, true);
-					}
+
+                        List<OrderedItemForJson> _orderedItemForJsonList = new List<OrderedItemForJson>();
+                        foreach(Item i in items)
+                        {
+                            OrderedItemForJson oij = new OrderedItemForJson(orderId, i.Id, addedQuantities[i.Id]);
+                            _orderedItemForJsonList.Add(oij);
+                        }
+
+
+                        //for webservices
+                        //var order = dbr.getOrder(orderId);
+                        OrderForJson _order = new OrderForJson(orderId, deliveryDate.Text, true, branchId);
+                        string orderForDB = JsonConvert.SerializeObject(_order);
+
+                        string orderedItemsForDB = JsonConvert.SerializeObject(_orderedItemForJsonList);
+
+                        //List<OrderedItem> orderedItemsForDB = dbr.getAllOrderedItems(orderId);
+
+                        InitializeService1Client();
+                        _client.sendOrderAsync(orderForDB, Intent.GetBooleanExtra("replacement", false), orderedItemsForDB);
+                    }
 					else
 					{
 						dbr.updateOrder(orderId, deliveryDate.Text, false);
                         dbr.updateOrderedItems(addedCategories, orderId, addedQuantities);
+
+                        //for webservices
+                        var order = dbr.getOrder(orderId);
+                        string orderForDB = JsonConvert.SerializeObject(order);
+
+                        var orderedItems = dbr.getAllOrderedItems(orderId);
+                        string orderedItemsForDB = JsonConvert.SerializeObject(orderedItems);
+
+                        //List<OrderedItem> orderedItemsForDB = dbr.getAllOrderedItems(orderId);
+
+                        InitializeService1Client();
+                        _client.sendOrderAsync(orderForDB, Intent.GetBooleanExtra("replacement", false), orderedItemsForDB);
                     }
                 }
 
-                //for webservices
-                var order = dbr.getOrder(orderId);
-                string orderForDB = JsonConvert.SerializeObject(order);
-
-                var orderedItems = dbr.getAllOrderedItems(orderId);
-                string orderedItemsForDB = JsonConvert.SerializeObject(orderedItems);
-
-                //List<OrderedItem> orderedItemsForDB = dbr.getAllOrderedItems(orderId);
-
-                InitializeService1Client();
-                _client.sendOrderAsync(orderForDB, Intent.GetBooleanExtra("replacement", false), orderedItemsForDB);
+               
 
             });
 

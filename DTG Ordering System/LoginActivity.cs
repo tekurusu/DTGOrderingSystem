@@ -72,7 +72,7 @@ namespace DTG_Ordering_System
 
                     //ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
                     ISharedPreferencesEditor editor = prefs.Edit();
-                    editor.PutString("branchId", accounts2[userSpinner.SelectedItemPosition].BranchId.ToString());
+                    editor.PutString("branchId", accounts2[userSpinner.SelectedItemPosition - 1].BranchId.ToString());
                     editor.Apply();
 
                     StartActivity(intent);
